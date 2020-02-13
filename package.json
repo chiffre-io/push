@@ -126,6 +126,7 @@
       [
         "semantic-release-slack-bot",
         {
+          "packageName": "@chiffre/push",
           "notifyOnSuccess": true,
           "notifyOnFail": true
         }
