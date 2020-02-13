@@ -33,6 +33,10 @@ jobs:
         name: Install dependencies
       - run: yarn ci
         name: Run integration tests
+      - uses: coverallsapp/github-action@v1.0.1
+        name: Code coverage
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Continuous Delivery
       - uses: rlespinasse/github-slug-action@master
