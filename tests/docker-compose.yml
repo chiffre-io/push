@@ -1,0 +1,15 @@
+# Compose file for E2E tests
+
+version: "3"
+
+services:
+  redis:
+    image: redis:5.0-alpine
+    ports:
+      - "16379:6379"
+
+  wait:
+    image: jwilder/dockerize
+    command: dockerize -wait tcp://redis:6379
+    links:
+      - redis

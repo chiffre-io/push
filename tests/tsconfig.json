@@ -7,17 +7,17 @@
     "declaration": true,
     "declarationDir": "./dist",
     "outDir": "./lib",
-    "rootDir": "./src",
+    "rootDir": "..",
     "esModuleInterop": true,
 
     // Strict Type-Checking Options
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
+    // "strict": true,
+    // "noImplicitAny": true,
+    // "strictNullChecks": true,
+    // "strictFunctionTypes": true,
+    // "strictPropertyInitialization": true,
+    // "noImplicitThis": true,
+    // "alwaysStrict": true,
 
     // Additional Checks
     "noUnusedLocals": true,
@@ -25,5 +25,5 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["./src/**/*.ts"]
+  "include": ["./*.ts"]
 }
