@@ -30,7 +30,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --ignore-scripts
+        name: Install dependencies
       - run: yarn ci
+        name: Run integration tests
       - uses: rlespinasse/github-slug-action@master
         name: Get short Git SHA-1
       - uses: codfish/semantic-release-action@master
@@ -40,10 +42,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-      - run: |
-          echo $RELEASE_VERSION
-          echo $RELEASE_MAJOR
-          echo $RELEASE_MINOR
-          echo $RELEASE_PATCH
       - run: echo ${{ env.SERVICE_NAME }}@${{ env.RELEASE_VERSION }}-${{ env.GITHUB_SHA_SHORT }}
+        if: steps.semantic.outputs.new-release-published == 'true'
         name: Print Sentry test release
