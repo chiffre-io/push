@@ -2,7 +2,7 @@
   "name": "@chiffre/push",
   "version": "0.0.0-semantically-released",
   "description": "Shared types for push.chiffre.io",
-  "main": "lib/main.js",
+  "main": "",
   "types": "dist/types.d.ts",
   "license": "MIT",
   "author": {
@@ -32,8 +32,7 @@
     "dotenv": "^8.2.0",
     "env-alias": "^1.0.0",
     "fastify-micro": "^0.3.0",
-    "ioredis": "^4.14.1",
-    "read-pkg": "^5.2.0"
+    "ioredis": "^4.14.1"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
