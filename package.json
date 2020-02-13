@@ -37,6 +37,8 @@
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
+    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
     "@types/ioredis": "^4.14.7",
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.0",
@@ -46,6 +48,7 @@
     "jest": "^25.1.0",
     "nodemon": "^2.0.2",
     "npm-run-all": "^4.1.5",
+    "semantic-release-slack-bot": "^1.5.0",
     "ts-jest": "^25.2.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
@@ -98,6 +101,35 @@
   "release": {
     "branches": [
       "master"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/github",
+      "@semantic-release/npm",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "docs/CHANGELOG.md"
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "docs/CHANGELOG.md"
+          ],
+          "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}\n\n[skip ci]"
+        }
+      ],
+      [
+        "semantic-release-slack-bot",
+        {
+          "notifyOnSuccess": true,
+          "notifyOnFail": true
+        }
+      ]
     ]
   }
 }
