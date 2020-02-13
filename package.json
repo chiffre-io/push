@@ -94,5 +94,10 @@
         true
       ]
     }
+  },
+  "release": {
+    "branches": [
+      "master"
+    ]
   }
 }
