@@ -33,6 +33,8 @@ jobs:
         name: Install dependencies
       - run: yarn ci
         name: Run integration tests
+
+      # Continuous Delivery
       - uses: rlespinasse/github-slug-action@master
         name: Get short Git SHA-1
       - uses: codfish/semantic-release-action@master
