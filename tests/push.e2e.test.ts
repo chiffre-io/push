@@ -71,6 +71,6 @@ test('Push valid data', async () => {
   const data: SerializedMessage = JSON.parse(await ctx.redis.lpop('foo.data'))
   expect(data.payload).toEqual('v1.naclbox.foobar')
   expect(data.perf).toEqual(-1)
-  expect(data.received).toBeGreaterThan(tick)
-  expect(data.received).toBeLessThan(tock)
+  expect(data.received).toBeGreaterThanOrEqual(tick)
+  expect(data.received).toBeLessThanOrEqual(tock)
 })
