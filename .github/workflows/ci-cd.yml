@@ -1,0 +1,42 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  ci:
+    name: Integration
+    runs-on: ubuntu-latest
+    env:
+      CI: true
+      SERVICE_NAME: push
+    steps:
+      - id: yarn-cache
+        name: Get Yarn cache path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - uses: actions/cache@v1
+        name: Load Yarn cache
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --ignore-scripts
+      - run: yarn ci
+
+  cd:
+    name: Deployment
+    needs: ci
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: rlespinasse/github-slug-action@master
+        name: Get short Git SHA-1
+      - run: echo ${{ env.SERVICE_NAME }}@${{ env.RELEASE_VERSION }}-${{ env.GITHUB_SHA_SHORT }}
+        name: Print Sentry test release
