@@ -2,7 +2,7 @@
   "name": "@chiffre/push",
   "version": "0.0.1",
   "description": "Shared types for push.chiffre.io",
-  "main": "lib/index.js",
+  "main": "lib/main.js",
   "types": "dist/types.d.ts",
   "license": "MIT",
   "author": {
