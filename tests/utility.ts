@@ -25,7 +25,6 @@ export async function setup(): Promise<TestContext> {
 
   const port = parseInt(process.env.PORT!)
   const server = createServer()
-  await server.ready()
   await startServer(server, port)
   const api = axios.create({
     baseURL: process.env.PUSH_URL,

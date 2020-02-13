@@ -31,7 +31,7 @@
     "@47ng/check-env": "^2.0.0",
     "dotenv": "^8.2.0",
     "env-alias": "^1.0.0",
-    "fastify-micro": "^0.2.0",
+    "fastify-micro": "^0.3.0",
     "ioredis": "^4.14.1",
     "read-pkg": "^5.2.0"
   },

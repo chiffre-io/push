@@ -2048,10 +2048,10 @@ fastify-graceful-shutdown@^2.0.1:
     fastify-plugin "^1.5.0"
     fastparallel "^2.3.0"
 
-fastify-micro@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/fastify-micro/-/fastify-micro-0.2.0.tgz#27b25d2fb00a6d4c98e4f6dc6a628dd7ec9c2a81"
-  integrity sha512-BeX54ywaL+PDU03pIEP+QPNeZa8UQpyJN6qicU19Msb26JwhiZIQgDzSAMfnpAi8WhvdIAF34jfufJDckVWrxA==
+fastify-micro@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/fastify-micro/-/fastify-micro-0.3.0.tgz#5e834cef66ebc856e5dc840f989c297c74ce0a4a"
+  integrity sha512-DiZ/qYF1AjyxT9HCSQTSw5Ls469KYohIgaR8RFl/k4CI0RqLgaIu9dsxFPq3zs1Ai5etnBCzykgq9NI79Bk4yQ==
   dependencies:
     "@47ng/check-env" "^2.0.0"
     "@sentry/node" "^5.11.1"
