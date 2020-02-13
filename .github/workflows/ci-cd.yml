@@ -31,13 +31,6 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --ignore-scripts
       - run: yarn ci
-
-  cd:
-    name: Deployment
-    needs: ci
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
       - uses: rlespinasse/github-slug-action@master
         name: Get short Git SHA-1
       - uses: codfish/semantic-release-action@master
