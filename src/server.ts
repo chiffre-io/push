@@ -2,7 +2,6 @@ import path from 'path'
 import checkEnv from '@47ng/check-env'
 import { createServer, Server } from 'fastify-micro'
 import { Redis } from 'ioredis'
-import readPkg from 'read-pkg'
 
 export interface App extends Server {
   redis: Redis
@@ -14,9 +13,8 @@ export default function createApp() {
   checkEnv({
     required: ['REDIS_URI']
   })
-  const pkg = readPkg.sync({ cwd: path.resolve(__dirname, '..') })
   const app = createServer<App>({
-    name: `push@${pkg.version}`,
+    name: 'push',
     routesDir: path.resolve(__dirname, 'routes'),
     redactEnv: ['REDIS_URI'],
     sentry: {
