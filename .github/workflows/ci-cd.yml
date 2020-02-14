@@ -33,10 +33,6 @@ jobs:
         name: Install dependencies
       - run: yarn ci
         name: Run integration tests
-      - uses: coverallsapp/github-action@v1.0.1
-        name: Code coverage
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Continuous Delivery
       - uses: rlespinasse/github-slug-action@master
@@ -51,3 +47,9 @@ jobs:
       - run: echo ${{ env.SERVICE_NAME }}@${{ env.RELEASE_VERSION }}-${{ env.GITHUB_SHA_SHORT }}
         if: steps.semantic.outputs.new-release-published == 'true'
         name: Print Sentry test release
+
+      # Other things
+      - uses: coverallsapp/github-action@v1.0.1
+        name: Report code coverage
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
