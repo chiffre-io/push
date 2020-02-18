@@ -56,6 +56,7 @@ jobs:
 
       - uses: tclindner/sentry-releases-action@v1.0.0
         name: Publish the release to Sentry
+        if: steps.semantic.outputs.new-release-published == 'true'
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: 47ng
