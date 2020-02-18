@@ -54,15 +54,16 @@ jobs:
         if: steps.semantic.outputs.new-release-published == 'true'
         name: Print Sentry test release
 
-      # - uses: tclindner/sentry-releases-action@v1.0.0
-      #   name: Publish the release to Sentry
-      #   env:
-      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-      #     SENTRY_ORG: 47ng
-      #     SENTRY_PROJECT: chiffre
-      #   with:
-      #     tagName: ${{ steps.sentry-release.outputs.id }}
-      #     environment: production
+      - uses: tclindner/sentry-releases-action@v1.0.0
+        name: Publish the release to Sentry
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: 47ng
+          SENTRY_PROJECT: chiffre
+        with:
+          tagName: ${{ steps.sentry-release.outputs.id }}
+          environment: production
+
       # - uses: 47ng/actions-clever-cloud@v1
       #   name: Deploy to Clever Cloud
       #   if: steps.semantic.outputs.new-release-published == 'true'
