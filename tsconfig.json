@@ -5,7 +5,8 @@
     "module": "commonjs",
     "lib": [],
     "declaration": true,
-    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "outDir": "./lib",
     "rootDir": "./src",
     "esModuleInterop": true,
 

@@ -18,9 +18,10 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf ./dist",
+    "clean": "rm -rf lib dist coverage",
     "build:ts": "tsc",
-    "build": "run-s clean build:ts",
+    "build:exports": "cp -f ./lib/exports.js ./dist/exports.js",
+    "build": "run-s clean build:ts build:exports",
     "ci": "run-s build e2e:test",
     "e2e:setup": "./tests/docker-start.sh",
     "e2e:teardown": "./tests/docker-stop.sh",
