@@ -3,7 +3,7 @@ name: Continuous Integration
 on:
   push:
     branches:
-      - develop
+      - next
       - feature/*
 
 env:
@@ -34,6 +34,12 @@ jobs:
         name: Install dependencies
       - run: yarn ci
         name: Run integration tests
+      - uses: codfish/semantic-release-action@master
+        name: Semantic Release
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - uses: coverallsapp/github-action@v1.0.1
         name: Report code coverage
         with:
