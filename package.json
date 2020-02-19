@@ -93,11 +93,5 @@
         true
       ]
     }
-  },
-  "release": {
-    "branches": [
-      "master",
-      "next"
-    ]
   }
 }
