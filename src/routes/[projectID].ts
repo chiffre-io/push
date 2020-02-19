@@ -1,5 +1,9 @@
 import { App } from '../server'
-import { SerializedMessage, getProjectDataKey } from '../exports'
+import {
+  PubSubChannels,
+  SerializedMessage,
+  getProjectDataKey
+} from '../exports'
 import { getProjectConfig } from '../plugins/redis'
 
 interface QueryParams {
@@ -46,7 +50,11 @@ export default async function projectIDRoute(app: App) {
         country: req.headers['cf-ipcountry']
       }
       const dataKey = getProjectDataKey(projectID)
-      await app.redis.lpush(dataKey, JSON.stringify(messageObject))
+      await app.redis
+        .multi()
+        .lpush(dataKey, JSON.stringify(messageObject))
+        .publish(PubSubChannels.newDataAvailable, dataKey)
+        .exec()
       return res.status(204).send()
     } catch (error) {
       req.log.error(error)

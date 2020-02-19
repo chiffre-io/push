@@ -48,3 +48,7 @@ export function getProjectIDFromConfigKey(configKey: string) {
 export function getProjectIDFromDataKey(dataKey: string) {
   return dataKey.split('.')[0]
 }
+
+export enum PubSubChannels {
+  newDataAvailable = 'push:new-data-available'
+}
