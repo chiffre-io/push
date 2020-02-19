@@ -57,13 +57,13 @@ jobs:
         with:
           tagName: ${{ steps.sentry-release.outputs.id }}
           environment: production
-      - uses: 47ng/actions-clever-cloud@master
-        name: Deploy to Clever Cloud
-        if: steps.semantic.outputs.new-release-published == 'true'
-        with:
-          alias: push
-          extraEnvSafelist: SENTRY_RELEASE
-          CLEVER_ENV_SENTRY_RELEASE: ${{ steps.sentry-release.outputs.id }}
-        env:
-          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+      # - uses: 47ng/actions-clever-cloud@master
+      #   name: Deploy to Clever Cloud
+      #   if: steps.semantic.outputs.new-release-published == 'true'
+      #   with:
+      #     alias: push
+      #     extraEnvSafelist: SENTRY_RELEASE
+      #     CLEVER_ENV_SENTRY_RELEASE: ${{ steps.sentry-release.outputs.id }}
+      #   env:
+      #     CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+      #     CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
