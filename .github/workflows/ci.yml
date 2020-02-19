@@ -34,11 +34,9 @@ jobs:
         name: Install dependencies
       - run: yarn ci
         name: Run integration tests
-      - uses: codfish/semantic-release-action@master
+      - uses: 47ng/semantic-release-action@master
         name: Semantic Release
         id: semantic
-        with:
-          branch: next
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
