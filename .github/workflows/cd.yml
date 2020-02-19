@@ -1,4 +1,4 @@
-name: CI/CD
+name: Continuous Delivery
 
 on:
   push:
@@ -9,8 +9,8 @@ env:
   SERVICE_NAME: push
 
 jobs:
-  ci:
-    name: Integration
+  cd:
+    name: Continuous Delivery
     runs-on: ubuntu-latest
     env:
       CI: true
@@ -31,10 +31,9 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --ignore-scripts
         name: Install dependencies
-      - run: yarn ci
-        name: Run integration tests
 
-      # Continuous Delivery
+      # Continuous Delivery Pipeline --
+
       - uses: rlespinasse/github-slug-action@master
         name: Get short Git SHA-1
       - uses: codfish/semantic-release-action@master
@@ -58,19 +57,13 @@ jobs:
         with:
           tagName: ${{ steps.sentry-release.outputs.id }}
           environment: production
-
-      # - uses: 47ng/actions-clever-cloud@v1
-      #   name: Deploy to Clever Cloud
-      #   if: steps.semantic.outputs.new-release-published == 'true'
-      #   with:
-      #     alias: push
-      #     env: SENTRY_RELEASE=${{ env.SERVICE_NAME }}@${{ env.RELEASE_VERSION }}-${{ env.GITHUB_SHA_SHORT }}
-      #   env:
-      #     CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
-      #     CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-
-      # Other things
-      - uses: coverallsapp/github-action@v1.0.1
-        name: Report code coverage
+      - uses: 47ng/actions-clever-cloud@master
+        name: Deploy to Clever Cloud
+        if: steps.semantic.outputs.new-release-published == 'true'
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          alias: push
+          extraEnvSafelist: SENTRY_RELEASE
+          CLEVER_ENV_SENTRY_RELEASE: ${{ steps.sentry-release.outputs.id }}
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
