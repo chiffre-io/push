@@ -1,2 +1,3 @@
 *
-!dist/types.d.ts
+!dist/exports.js
+!dist/exports.d.ts

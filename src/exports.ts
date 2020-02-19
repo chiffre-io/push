@@ -32,3 +32,11 @@ export interface ProjectConfig {
    */
   origins: string[]
 }
+
+export function getProjectConfigKey(projectID: string) {
+  return `${projectID}.config`
+}
+
+export function getProjectDataKey(projectID: string) {
+  return `${projectID}.data`
+}

@@ -2,8 +2,8 @@
   "name": "@chiffre/push",
   "version": "0.0.0-semantically-released",
   "description": "Shared types for push.chiffre.io",
-  "main": "",
-  "types": "dist/types.d.ts",
+  "main": "dist/exports.js",
+  "types": "dist/exports.d.ts",
   "license": "MIT",
   "author": {
     "name": "François Best",
@@ -18,7 +18,7 @@
     "access": "public"
   },
   "scripts": {
-    "clean": "rm -rf ./lib ./dist",
+    "clean": "rm -rf ./dist",
     "build:ts": "tsc",
     "build": "run-s clean build:ts",
     "ci": "run-s build e2e:test",

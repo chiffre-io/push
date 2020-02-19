@@ -1,5 +1,5 @@
 import { setup, TestContext } from './utility'
-import { ProjectConfig, SerializedMessage } from '../src/types'
+import { ProjectConfig, SerializedMessage } from '../src/exports'
 import { getProjectConfig } from '../src/plugins/redis'
 
 let ctx: TestContext

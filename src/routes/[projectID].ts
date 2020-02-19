@@ -1,6 +1,6 @@
 import { App } from '../server'
-import { SerializedMessage } from '../types'
-import { getProjectConfig, getProjectDataKey } from '../plugins/redis'
+import { SerializedMessage, getProjectDataKey } from '../exports'
+import { getProjectConfig } from '../plugins/redis'
 
 interface QueryParams {
   perf?: string

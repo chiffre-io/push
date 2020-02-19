@@ -2,7 +2,7 @@ import Redis from 'ioredis'
 import { FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
 import { App } from '../server'
-import { ProjectConfig } from '../types'
+import { ProjectConfig, getProjectConfigKey } from '../exports'
 
 export default fp(function redisPlugin(app, _, next) {
   const redis = new Redis(process.env.REDIS_URI)
@@ -17,16 +17,6 @@ export default fp(function redisPlugin(app, _, next) {
   app.decorate('redis', redis)
   next()
 })
-
-// --
-
-export function getProjectConfigKey(projectID: string) {
-  return `${projectID}.config`
-}
-
-export function getProjectDataKey(projectID: string) {
-  return `${projectID}.data`
-}
 
 // --
 
