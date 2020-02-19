@@ -1,5 +1,9 @@
 import { setup, TestContext } from './utility'
-import { ProjectConfig, SerializedMessage } from '../src/exports'
+import {
+  ProjectConfig,
+  SerializedMessage,
+  PubSubChannels
+} from '../src/exports'
 import { getProjectConfig } from '../src/plugins/redis'
 
 let ctx: TestContext
@@ -73,4 +77,18 @@ test('Push valid data', async () => {
   expect(data.perf).toEqual(-1)
   expect(data.received).toBeGreaterThanOrEqual(tick)
   expect(data.received).toBeLessThanOrEqual(tock)
+})
+
+test('Publish new data notification', async () => {
+  await ctx.redis.subscribe(PubSubChannels.newDataAvailable)
+  const onMessage = jest.fn()
+  ctx.redis.on('message', onMessage)
+  await ctx.api.post('/foo', 'v1.naclbox.foobar', {
+    headers: {
+      origin: 'https://foo.com'
+    }
+  })
+  expect(onMessage).toHaveBeenCalledTimes(1)
+  expect(onMessage.mock.calls[0][0]).toEqual(PubSubChannels.newDataAvailable)
+  expect(onMessage.mock.calls[0][1]).toEqual('foo.data')
 })
