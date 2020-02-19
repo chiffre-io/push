@@ -34,12 +34,6 @@ jobs:
         name: Install dependencies
       - run: yarn ci
         name: Run integration tests
-      - uses: 47ng/semantic-release-action@master
-        name: Semantic Release
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - uses: coverallsapp/github-action@v1.0.1
         name: Report code coverage
         with:
