@@ -40,3 +40,11 @@ export function getProjectConfigKey(projectID: string) {
 export function getProjectDataKey(projectID: string) {
   return `${projectID}.data`
 }
+
+export function getProjectIDFromConfigKey(configKey: string) {
+  return configKey.split('.')[0]
+}
+
+export function getProjectIDFromDataKey(dataKey: string) {
+  return dataKey.split('.')[0]
+}
