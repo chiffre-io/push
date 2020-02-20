@@ -42,7 +42,7 @@ export interface ProjectConfig {
 export enum KeyIDs {
   config = 'config',
   data = 'data',
-  limit = 'limit'
+  count = 'count'
 }
 
 export function getProjectKey(projectID: string, keyID: KeyIDs) {

@@ -48,10 +48,10 @@ export default async function projectIDRoute(app: App) {
       }
       // Check limits
       const now = Date.now()
-      const limitKey = getProjectKey(projectID, KeyIDs.limit)
+      const countKey = getProjectKey(projectID, KeyIDs.count)
       const nextMidnightUTC = getNextMidnightUTC(now)
       if (projectConfig.dailyLimit) {
-        const usage = parseInt((await app.redis.get(limitKey)) || '0') + 1
+        const usage = parseInt((await app.redis.get(countKey)) || '0') + 1
         if (usage > projectConfig.dailyLimit) {
           const stats: OverLimitStats = {
             projectID,
@@ -63,8 +63,8 @@ export default async function projectIDRoute(app: App) {
           await app.redis
             .multi()
             .publish(PubSubChannels.overLimit, JSON.stringify(stats))
-            .incr(limitKey)
-            .expireat(limitKey, nextMidnightUTC / 1000)
+            .incr(countKey)
+            .expireat(countKey, nextMidnightUTC / 1000)
             .exec()
           return res.status(204).send()
         }
@@ -81,8 +81,8 @@ export default async function projectIDRoute(app: App) {
         .multi()
         .lpush(dataKey, JSON.stringify(messageObject))
         .publish(PubSubChannels.newDataAvailable, dataKey)
-        .incr(limitKey)
-        .expireat(limitKey, nextMidnightUTC / 1000)
+        .incr(countKey)
+        .expireat(countKey, nextMidnightUTC / 1000)
         .exec()
       return res.status(204).send()
     } catch (error) {

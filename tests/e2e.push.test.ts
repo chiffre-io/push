@@ -120,7 +120,7 @@ test('Limits - Push message under limit', async () => {
   expect(onMessage.mock.calls[0][1]).toEqual('bar.data')
   expect(onMessage.mock.calls[1][0]).toEqual(PubSubChannels.newDataAvailable)
   expect(onMessage.mock.calls[1][1]).toEqual('bar.data')
-  const usage = parseInt((await ctx.redis.get('bar.limit')) || '0')
+  const usage = parseInt((await ctx.redis.get('bar.count')) || '0')
   expect(await ctx.redis.llen('bar.data')).toEqual(2)
   expect(usage).toEqual(2)
 })
@@ -136,7 +136,7 @@ test('Limits - Push message over limit - does not call newDataAvailable', async 
   })
   await ctx.redis.unsubscribe(PubSubChannels.newDataAvailable)
   expect(onMessage).not.toHaveBeenCalled()
-  const usage = parseInt((await ctx.redis.get('bar.limit')) || '0')
+  const usage = parseInt((await ctx.redis.get('bar.count')) || '0')
   expect(usage).toEqual(3)
   expect(await ctx.redis.llen('bar.data')).toEqual(2) // Extra messages are dropped
 })
