@@ -1,10 +1,13 @@
 import { App } from '../server'
 import {
+  KeyIDs,
+  OverLimitStats,
   PubSubChannels,
   SerializedMessage,
-  getProjectDataKey
+  getProjectKey
 } from '../exports'
 import { getProjectConfig } from '../plugins/redis'
+import { getNextMidnightUTC } from '../utility'
 
 interface QueryParams {
   perf?: string
@@ -43,17 +46,43 @@ export default async function projectIDRoute(app: App) {
         })
         return res.status(204).send()
       }
+      // Check limits
+      const now = Date.now()
+      const limitKey = getProjectKey(projectID, KeyIDs.limit)
+      const nextMidnightUTC = getNextMidnightUTC(now)
+      if (projectConfig.dailyLimit) {
+        const usage = parseInt((await app.redis.get(limitKey)) || '0') + 1
+        if (usage > projectConfig.dailyLimit) {
+          const stats: OverLimitStats = {
+            projectID,
+            usage: usage,
+            overUsage: usage - projectConfig.dailyLimit,
+            currentTime: now,
+            remainingTime: nextMidnightUTC - now
+          }
+          await app.redis
+            .multi()
+            .publish(PubSubChannels.overLimit, JSON.stringify(stats))
+            .incr(limitKey)
+            .expireat(limitKey, nextMidnightUTC / 1000)
+            .exec()
+          return res.status(204).send()
+        }
+      }
+
       const messageObject: SerializedMessage = {
         payload,
         perf: parseInt(req.query.perf || '-1') || -1,
-        received: Date.now(),
+        received: now,
         country: req.headers['cf-ipcountry']
       }
-      const dataKey = getProjectDataKey(projectID)
+      const dataKey = getProjectKey(projectID, KeyIDs.data)
       await app.redis
         .multi()
         .lpush(dataKey, JSON.stringify(messageObject))
         .publish(PubSubChannels.newDataAvailable, dataKey)
+        .incr(limitKey)
+        .expireat(limitKey, nextMidnightUTC / 1000)
         .exec()
       return res.status(204).send()
     } catch (error) {

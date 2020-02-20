@@ -2,7 +2,7 @@ import Redis from 'ioredis'
 import { FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
 import { App } from '../server'
-import { ProjectConfig, getProjectConfigKey } from '../exports'
+import { ProjectConfig, KeyIDs, getProjectKey } from '../exports'
 
 export default fp(function redisPlugin(app, _, next) {
   const redis = new Redis(process.env.REDIS_URI)
@@ -25,9 +25,9 @@ export async function getProjectConfig(
   app: App,
   req?: FastifyRequest
 ): Promise<ProjectConfig | null> {
-  const key = getProjectConfigKey(projectID)
+  const configKey = getProjectKey(projectID, KeyIDs.config)
   try {
-    const json = await app.redis.get(key)
+    const json = await app.redis.get(configKey)
     if (!json) {
       throw new Error('Project configuration not found')
     }
@@ -35,7 +35,8 @@ export async function getProjectConfig(
   } catch (error) {
     req?.log.warn({
       err: error,
-      projectID
+      projectID,
+      configKey
     })
     app.sentry.report(error, req)
     return null

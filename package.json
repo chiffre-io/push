@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",
+    "dayjs": "^1.8.20",
     "dotenv": "^8.2.0",
     "env-alias": "^1.0.0",
     "fastify-micro": "^0.3.0",
