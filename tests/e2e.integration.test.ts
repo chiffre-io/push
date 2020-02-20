@@ -13,9 +13,9 @@ test('Data keys', () => {
   expect(received).toEqual(expected)
 })
 
-test('Limit keys', () => {
+test('Count keys', () => {
   const expected = 'foobar'
-  const received = getProjectIDFromKey(getProjectKey(expected, KeyIDs.limit))
+  const received = getProjectIDFromKey(getProjectKey(expected, KeyIDs.count))
   expect(received).toEqual(expected)
 })
 
