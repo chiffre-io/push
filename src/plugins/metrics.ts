@@ -9,17 +9,17 @@ export type MetricsDecoration = {
 }
 
 export enum Metrics {
-  invalidProjectConfig = 'invalid.projectConfig',
-  invalidOrigin = 'invalid.origin',
-  invalidPayload = 'invalid.payload',
-  invalidCountry = 'invalid.country',
-  overUsageCount = 'overUsage.count',
-  overUsageUsage = 'overUsage.usage',
-  overUsageRemaining = 'overUsage.remaining',
-  processedCount = 'processed.count',
-  processedPerf = 'processed.perf',
-  processedSize = 'processed.size',
-  processedCountry = 'processed.country'
+  invalidProjectConfig = 'invalid_projectConfig',
+  invalidOrigin = 'invalid_origin',
+  invalidPayload = 'invalid_payload',
+  invalidCountry = 'invalid_country',
+  overUsageCount = 'overUsage_count',
+  overUsageUsage = 'overUsage_usage',
+  overUsageRemaining = 'overUsage_remaining',
+  processedCount = 'processed_count',
+  processedPerf = 'processed_perf',
+  processedSize = 'processed_size',
+  processedCountry = 'processed_country'
 }
 
 export default fp(function metricsPlugin(app, _, next) {
@@ -27,7 +27,7 @@ export default fp(function metricsPlugin(app, _, next) {
     host: process.env.STATSD_HOST || 'localhost',
     port: parseInt(process.env.STATSD_PORT || '8125'),
     mock: process.env.ENABLE_METRICS !== 'true',
-    prefix: 'push',
+    prefix: 'push_',
     global_tags: [
       `release:${process.env.SENTRY_RELEASE || 'dev'}`,
       `inst:${(process.env.INSTANCE_ID || 'local').slice(0, 8)}`
@@ -37,19 +37,19 @@ export default fp(function metricsPlugin(app, _, next) {
   const decoration: MetricsDecoration = {
     increment: function increment(metric, projectID) {
       client.increment(metric)
-      client.increment(`${metric}.${projectID}`)
+      client.increment(`${metric}_${projectID}`)
     },
     time: function time(metric, projectID, time) {
       client.timing(metric, time)
-      client.timing(`${metric}.${projectID}`, time)
+      client.timing(`${metric}_${projectID}`, time)
     },
     gauge: function gauge(metric, projectID, value) {
       client.gauge(metric, value)
-      client.gauge(`${metric}.${projectID}`, value)
+      client.gauge(`${metric}_${projectID}`, value)
     },
     histogram: function gauge(metric, projectID, value) {
       client.histogram(metric, value)
-      client.histogram(`${metric}.${projectID}`, value)
+      client.histogram(`${metric}_${projectID}`, value)
     }
   }
 
