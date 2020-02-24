@@ -8,6 +8,7 @@ import {
 } from '../exports'
 import { getProjectConfig } from '../plugins/redis'
 import { getNextMidnightUTC } from '../utility'
+import { Metrics } from '../plugins/metrics'
 
 interface QueryParams {
   perf?: string
@@ -20,9 +21,13 @@ interface UrlParams {
 export default async function projectIDRoute(app: App) {
   app.post<QueryParams, UrlParams>('/:projectID', async (req, res) => {
     const { projectID } = req.params
+    const country = req.headers['cf-ipcountry']
+
     try {
       const projectConfig = await getProjectConfig(projectID, app, req)
       if (projectConfig === null) {
+        app.metrics.increment(Metrics.invalidProjectConfig, projectID)
+        app.metrics.histogram(Metrics.invalidCountry, projectID, country)
         return res.status(204).send()
       }
       if (!projectConfig.origins.includes(req.headers['origin'])) {
@@ -33,6 +38,8 @@ export default async function projectIDRoute(app: App) {
           requestOrigin: req.headers['origin'],
           projectOrigins: projectConfig.origins
         })
+        app.metrics.increment(Metrics.invalidOrigin, projectID)
+        app.metrics.histogram(Metrics.invalidCountry, projectID, country)
         return res.status(204).send()
       }
 
@@ -44,6 +51,8 @@ export default async function projectIDRoute(app: App) {
           projectID,
           payload
         })
+        app.metrics.increment(Metrics.invalidPayload, projectID)
+        app.metrics.histogram(Metrics.invalidCountry, projectID, country)
         return res.status(204).send()
       }
       // Check limits
@@ -66,6 +75,13 @@ export default async function projectIDRoute(app: App) {
             .incr(countKey)
             .expireat(countKey, nextMidnightUTC / 1000)
             .exec()
+          app.metrics.increment(Metrics.overUsageCount, projectID)
+          app.metrics.gauge(Metrics.overUsageUsage, projectID, usage)
+          app.metrics.gauge(
+            Metrics.overUsageRemaining,
+            projectID,
+            nextMidnightUTC - now
+          )
           return res.status(204).send()
         }
       }
@@ -74,7 +90,7 @@ export default async function projectIDRoute(app: App) {
         payload,
         perf: parseInt(req.query.perf || '-1') || -1,
         received: now,
-        country: req.headers['cf-ipcountry']
+        country
       }
       const dataKey = getProjectKey(projectID, KeyIDs.data)
       await app.redis
@@ -84,6 +100,19 @@ export default async function projectIDRoute(app: App) {
         .incr(countKey)
         .expireat(countKey, nextMidnightUTC / 1000)
         .exec()
+
+      app.metrics.increment(Metrics.processedCount, projectID)
+      app.metrics.histogram(
+        Metrics.processedPerf,
+        projectID,
+        messageObject.perf
+      )
+      app.metrics.histogram(
+        Metrics.processedSize,
+        projectID,
+        messageObject.payload.length
+      )
+      app.metrics.histogram(Metrics.processedCountry, projectID, country)
       return res.status(204).send()
     } catch (error) {
       req.log.error(error)

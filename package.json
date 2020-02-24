@@ -35,13 +35,15 @@
     "dotenv": "^8.2.0",
     "env-alias": "^1.0.0",
     "fastify-micro": "^0.3.0",
-    "ioredis": "^4.14.1"
+    "ioredis": "^4.14.1",
+    "node-statsd": "^0.1.1"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
     "@types/ioredis": "^4.14.7",
     "@types/jest": "^25.1.2",
     "@types/node": "^13.7.0",
+    "@types/node-statsd": "^0.1.2",
     "axios": "^0.19.2",
     "commitlint": "^8.3.5",
     "husky": "^4.2.1",

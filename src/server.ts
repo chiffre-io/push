@@ -2,9 +2,11 @@ import path from 'path'
 import checkEnv from '@47ng/check-env'
 import { createServer, Server } from 'fastify-micro'
 import { Redis } from 'ioredis'
+import { MetricsDecoration } from './plugins/metrics'
 
 export interface App extends Server {
   redis: Redis
+  metrics: MetricsDecoration
 }
 
 // --
@@ -45,6 +47,7 @@ export default function createApp() {
     },
     configure: app => {
       app.register(require('./plugins/redis').default)
+      app.register(require('./plugins/metrics').default)
     }
   })
 
