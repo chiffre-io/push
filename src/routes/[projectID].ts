@@ -30,7 +30,10 @@ export default async function projectIDRoute(app: App) {
         app.metrics.histogram(Metrics.invalidCountry, projectID, country)
         return res.status(204).send()
       }
-      if (!projectConfig.origins.includes(req.headers['origin'])) {
+      if (
+        req.headers['origin'] &&
+        !projectConfig.origins.includes(req.headers['origin'])
+      ) {
         // Drop invalid origin
         req.log.warn({
           msg: 'Invalid origin',
