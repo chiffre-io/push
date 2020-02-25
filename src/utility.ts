@@ -4,7 +4,7 @@ export { dayjs }
 
 dayjs.extend(utc)
 
-export function getNextMidnightUTC(now: number = Date.now()) {
+export function getNextMidnightUTC(now: number) {
   return dayjs(now)
     .utc()
     .set('h', 0)

@@ -6,6 +6,7 @@ import {
   OverLimitStats
 } from '../src/exports'
 import { getProjectConfig } from '../src/plugins/redis'
+import { RATE_LIMIT_REQUESTS_PER_MINUTE } from '../src/routes/[projectID]'
 
 let ctx: TestContext
 
@@ -78,6 +79,13 @@ test('Push valid data', async () => {
   expect(data.perf).toEqual(-1)
   expect(data.received).toBeGreaterThanOrEqual(tick)
   expect(data.received).toBeLessThanOrEqual(tock)
+})
+
+test('Push from missing origin is accepted', async () => {
+  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar')
+  expect(res.status).toEqual(204)
+  const data = await ctx.redis.llen('foo.data')
+  expect(data).toBe(1)
 })
 
 test('Publish new data notification', async () => {
@@ -156,4 +164,36 @@ test('Limits - Push message over limit - calls overLimit', async () => {
   expect(stats.usage).toEqual(4)
   expect(stats.overUsage).toEqual(2)
   expect(stats.projectID).toEqual('bar')
+})
+
+test('Rate Limit should impact projects independently', async () => {
+  const config: ProjectConfig = {
+    origins: ['https://egg.com'],
+    dailyLimit: 2
+  }
+  await ctx.redis.set('egg.config', JSON.stringify(config))
+  for (let i = 0; i < RATE_LIMIT_REQUESTS_PER_MINUTE; ++i) {
+    const res = await ctx.api.post('/egg', 'v1.naclbox.egg', {
+      headers: {
+        origin: 'https://egg.com'
+      }
+    })
+    expect(res.status).toEqual(204)
+  }
+  {
+    const res = await ctx.api.post('/egg', 'v1.naclbox.egg', {
+      headers: {
+        origin: 'https://egg.com'
+      }
+    })
+    expect(res.status).toEqual(429) // Too many requests
+  }
+  {
+    const res = await ctx.api.post('/bar', 'v1.naclbox.bar', {
+      headers: {
+        origin: 'https://bar.com'
+      }
+    })
+    expect(res.status).toEqual(204)
+  }
 })

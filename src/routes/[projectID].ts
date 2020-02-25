@@ -19,10 +19,12 @@ interface UrlParams {
   projectID: string
 }
 
+export const RATE_LIMIT_REQUESTS_PER_MINUTE = 200
+
 export default async function projectIDRoute(app: App) {
   app.register(rateLimit, {
     global: true,
-    max: 200,
+    max: RATE_LIMIT_REQUESTS_PER_MINUTE,
     timeWindow: '1 minute',
     redis: app.redis.rateLimit,
     keyGenerator: function(req: any) {
@@ -99,7 +101,7 @@ export default async function projectIDRoute(app: App) {
             .multi()
             .publish(PubSubChannels.overLimit, JSON.stringify(stats))
             .incr(countKey)
-            .expireat(countKey, nextMidnightUTC / 1000)
+            .pexpireat(countKey, nextMidnightUTC)
             .exec()
           app.metrics.increment(Metrics.overUsageCount, projectID)
           app.metrics.gauge(Metrics.overUsageUsage, projectID, usage)
@@ -124,7 +126,7 @@ export default async function projectIDRoute(app: App) {
         .lpush(dataKey, JSON.stringify(messageObject))
         .publish(PubSubChannels.newDataAvailable, dataKey)
         .incr(countKey)
-        .expireat(countKey, nextMidnightUTC / 1000)
+        .pexpireat(countKey, nextMidnightUTC)
         .exec()
 
       app.metrics.increment(Metrics.processedCount, projectID)
