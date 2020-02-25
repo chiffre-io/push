@@ -27,11 +27,7 @@ export default fp(function metricsPlugin(app, _, next) {
     host: process.env.STATSD_HOST || 'localhost',
     port: parseInt(process.env.STATSD_PORT || '8125'),
     mock: process.env.ENABLE_METRICS !== 'true',
-    prefix: 'push_',
-    global_tags: [
-      `release:${process.env.SENTRY_RELEASE || 'dev'}`,
-      `inst:${(process.env.INSTANCE_ID || 'local').slice(0, 8)}`
-    ]
+    prefix: 'push_'
   })
 
   const decoration: MetricsDecoration = {
