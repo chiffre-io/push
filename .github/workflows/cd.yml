@@ -63,6 +63,7 @@ jobs:
         if: steps.semantic.outputs.new-release-published == 'true'
         with:
           alias: push
+          timeout: 600
           extraEnvSafelist: SENTRY_RELEASE
           CLEVER_ENV_SENTRY_RELEASE: ${{ steps.sentry-release.outputs.id }}
         env:
