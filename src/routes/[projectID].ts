@@ -54,14 +54,21 @@ export default async function projectIDRoute(app: App) {
           !projectConfig.origins.includes(req.headers['origin'])
         ) {
           // Drop invalid origin
+          const requestOrigin = req.headers['origin']
+          const projectOrigins = projectConfig.origins
           req.log.warn({
             msg: 'Invalid origin',
             projectID,
-            requestOrigin: req.headers['origin'],
-            projectOrigins: projectConfig.origins
+            requestOrigin,
+            projectOrigins
           })
           app.metrics.increment(Metrics.invalidOrigin, projectID)
           app.metrics.histogram(Metrics.invalidCountry, projectID, country)
+          app.sentry.report(new Error('Invalid payload format'), req, {
+            projectID,
+            requestOrigin,
+            projectOrigins
+          })
           return res.status(204).send()
         }
 
@@ -75,6 +82,10 @@ export default async function projectIDRoute(app: App) {
           })
           app.metrics.increment(Metrics.invalidPayload, projectID)
           app.metrics.histogram(Metrics.invalidCountry, projectID, country)
+          app.sentry.report(new Error('Invalid payload format'), req, {
+            projectID,
+            payload
+          })
           return res.status(204).send()
         }
         // Check limits
@@ -141,7 +152,9 @@ export default async function projectIDRoute(app: App) {
         return res.status(204).send()
       } catch (error) {
         req.log.error(error)
-        app.sentry.report(error, req)
+        app.sentry.report(error, req, {
+          projectID
+        })
         return res.status(204).send()
       }
     }
