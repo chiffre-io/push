@@ -1,5 +1,4 @@
 /**
-import { getProjectIDFromDataKey } from './exports'
  * The data format serialized to JSON and sent to the Redis queue
  */
 export interface SerializedMessage {
