@@ -21,7 +21,7 @@ interface UrlParams {
 export default async function projectIDRoute(app: App) {
   app.post<QueryParams, UrlParams>('/:projectID', async (req, res) => {
     const { projectID } = req.params
-    const country = req.headers['cf-ipcountry']
+    const country: string | undefined = req.headers['cf-ipcountry']
 
     try {
       const projectConfig = await getProjectConfig(projectID, app, req)
@@ -115,7 +115,9 @@ export default async function projectIDRoute(app: App) {
         projectID,
         messageObject.payload.length
       )
-      app.metrics.histogram(Metrics.processedCountry, projectID, country)
+      if (country) {
+        app.metrics.histogram(Metrics.processedCountry, projectID, country)
+      }
       return res.status(204).send()
     } catch (error) {
       req.log.error(error)
