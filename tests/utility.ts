@@ -31,6 +31,6 @@ export async function setup(): Promise<TestContext> {
     validateStatus: () => true
   })
   api.defaults.headers.post['Content-Type'] = 'text/plain;charset=UTF-8'
-  const redis = new Redis(process.env.REDIS_URI)
+  const redis = new Redis(process.env.REDIS_URI_INGRESS)
   return { server, api, redis }
 }

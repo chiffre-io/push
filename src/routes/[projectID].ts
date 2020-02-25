@@ -1,3 +1,4 @@
+import rateLimit from 'fastify-rate-limit'
 import { App } from '../server'
 import {
   KeyIDs,
@@ -19,6 +20,12 @@ interface UrlParams {
 }
 
 export default async function projectIDRoute(app: App) {
+  app.register(rateLimit, {
+    max: 200,
+    timeWindow: '1 minute',
+    redis: app.redis.rateLimit
+  })
+
   app.post<QueryParams, UrlParams>('/:projectID', async (req, res) => {
     const { projectID } = req.params
     const country: string | undefined = req.headers['cf-ipcountry']
@@ -63,7 +70,8 @@ export default async function projectIDRoute(app: App) {
       const countKey = getProjectKey(projectID, KeyIDs.count)
       const nextMidnightUTC = getNextMidnightUTC(now)
       if (projectConfig.dailyLimit) {
-        const usage = parseInt((await app.redis.get(countKey)) || '0') + 1
+        const usage =
+          parseInt((await app.redis.ingress.get(countKey)) || '0') + 1
         if (usage > projectConfig.dailyLimit) {
           const stats: OverLimitStats = {
             projectID,
@@ -72,7 +80,7 @@ export default async function projectIDRoute(app: App) {
             currentTime: now,
             remainingTime: nextMidnightUTC - now
           }
-          await app.redis
+          await app.redis.ingress
             .multi()
             .publish(PubSubChannels.overLimit, JSON.stringify(stats))
             .incr(countKey)
@@ -96,7 +104,7 @@ export default async function projectIDRoute(app: App) {
         country
       }
       const dataKey = getProjectKey(projectID, KeyIDs.data)
-      await app.redis
+      await app.redis.ingress
         .multi()
         .lpush(dataKey, JSON.stringify(messageObject))
         .publish(PubSubChannels.newDataAvailable, dataKey)

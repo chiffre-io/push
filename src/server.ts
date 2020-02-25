@@ -1,11 +1,11 @@
 import path from 'path'
 import checkEnv from '@47ng/check-env'
 import { createServer, Server } from 'fastify-micro'
-import { Redis } from 'ioredis'
 import { MetricsDecoration } from './plugins/metrics'
+import { RedisDecoration, checkRedisHealth } from './plugins/redis'
 
 export interface App extends Server {
-  redis: Redis
+  redis: RedisDecoration
   metrics: MetricsDecoration
 }
 
@@ -13,12 +13,12 @@ export interface App extends Server {
 
 export default function createApp() {
   checkEnv({
-    required: ['REDIS_URI']
+    required: ['REDIS_URI_INGRESS', 'REDIS_URI_RATE_LIMIT']
   })
   const app = createServer<App>({
     name: 'push',
     routesDir: path.resolve(__dirname, 'routes'),
-    redactEnv: ['REDIS_URI'],
+    redactEnv: ['REDIS_URI_INGRESS', 'REDIS_URI_RATE_LIMIT'],
     underPressure: {
       exposeStatusRoute: {
         url: '/',
@@ -28,15 +28,8 @@ export default function createApp() {
       },
       healthCheck: async (app: App) => {
         try {
-          const validStatuses = [
-            'connect',
-            'ready',
-            'connecting',
-            'reconnecting'
-          ]
-          if (!validStatuses.includes(app.redis.status)) {
-            throw new Error(`Redis status: ${app.redis.status}`)
-          }
+          checkRedisHealth(app.redis.ingress, 'ingress')
+          checkRedisHealth(app.redis.rateLimit, 'rate limit')
           return true
         } catch (error) {
           app.log.error(error)
@@ -52,7 +45,7 @@ export default function createApp() {
   })
 
   app.addHook('onClose', async (_, done) => {
-    await app.redis.quit()
+    await Promise.all([app.redis.ingress.quit(), app.redis.rateLimit.quit()])
     done()
   })
 

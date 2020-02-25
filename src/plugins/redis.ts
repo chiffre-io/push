@@ -4,17 +4,27 @@ import fp from 'fastify-plugin'
 import { App } from '../server'
 import { ProjectConfig, KeyIDs, getProjectKey } from '../exports'
 
+export interface RedisDecoration {
+  ingress: Redis.Redis
+  rateLimit: Redis.Redis
+}
+
 export default fp(function redisPlugin(app, _, next) {
-  const redis = new Redis(process.env.REDIS_URI)
-  redis.on('error', error => {
+  const ingress = new Redis(process.env.REDIS_URI_INGRESS)
+  ingress.on('error', error => {
     app.log.error({
       msg: `Redis error`,
       plugin: 'redis',
+      instance: 'ingress',
       error
     })
     ;(app as App).sentry.report(error)
   })
-  app.decorate('redis', redis)
+  const decoration: RedisDecoration = {
+    ingress,
+    rateLimit: new Redis(process.env.REDIS_URI_RATE_LIMIT)
+  }
+  app.decorate('redis', decoration)
   next()
 })
 
@@ -27,7 +37,7 @@ export async function getProjectConfig(
 ): Promise<ProjectConfig | null> {
   const configKey = getProjectKey(projectID, KeyIDs.config)
   try {
-    const json = await app.redis.get(configKey)
+    const json = await app.redis.ingress.get(configKey)
     if (!json) {
       throw new Error('Project configuration not found')
     }
@@ -40,5 +50,12 @@ export async function getProjectConfig(
     })
     app.sentry.report(error, req)
     return null
+  }
+}
+
+export function checkRedisHealth(instance: Redis.Redis, name: string) {
+  const whitelist = ['connect', 'ready', 'connecting', 'reconnecting']
+  if (!whitelist.includes(instance.status)) {
+    throw new Error(`Redis status (${name}): ${instance.status}`)
   }
 }

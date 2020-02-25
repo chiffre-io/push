@@ -14,7 +14,7 @@ afterAll(async () => {
 // -----------------------------------------------------------------------------
 
 test('Redis failure on get', async () => {
-  ctx.server.redis.get = () => {
+  ctx.server.redis.ingress.get = () => {
     throw new Error('oh no')
   }
   const res = await ctx.api.post('/bar', 'gibberish')
