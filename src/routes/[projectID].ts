@@ -68,7 +68,7 @@ export default async function projectIDRoute(app: App) {
           })
           app.metrics.increment(Metrics.invalidOrigin, projectID)
           app.metrics.histogram(Metrics.invalidCountry, projectID, country)
-          app.sentry.report(new Error('Invalid payload format'), req, {
+          app.sentry.report(new Error('Invalid origin'), req, {
             projectID,
             requestOrigin,
             projectOrigins
