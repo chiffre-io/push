@@ -50,7 +50,6 @@ export default async function projectIDRoute(app: App) {
         const projectConfig = await getProjectConfig(projectID, app, req)
         if (projectConfig === null) {
           app.metrics.increment(Metrics.invalidProjectConfig, projectID)
-          app.metrics.histogram(Metrics.invalidCountry, projectID, country)
           return res.status(204).send()
         }
         if (
@@ -67,7 +66,6 @@ export default async function projectIDRoute(app: App) {
             projectOrigins
           })
           app.metrics.increment(Metrics.invalidOrigin, projectID)
-          app.metrics.histogram(Metrics.invalidCountry, projectID, country)
           app.sentry.report(new Error('Invalid origin'), req, {
             projectID,
             requestOrigin,
@@ -85,7 +83,6 @@ export default async function projectIDRoute(app: App) {
             payload
           })
           app.metrics.increment(Metrics.invalidPayload, projectID)
-          app.metrics.histogram(Metrics.invalidCountry, projectID, country)
           app.sentry.report(new Error('Invalid payload format'), req, {
             projectID,
             payload

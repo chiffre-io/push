@@ -12,7 +12,6 @@ export enum Metrics {
   invalidProjectConfig = 'invalid_projectConfig',
   invalidOrigin = 'invalid_origin',
   invalidPayload = 'invalid_payload',
-  invalidCountry = 'invalid_country',
   overUsageCount = 'overUsage_count',
   overUsageUsage = 'overUsage_usage',
   overUsageRemaining = 'overUsage_remaining',
