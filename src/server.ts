@@ -1,6 +1,7 @@
 import path from 'path'
 import checkEnv from '@47ng/check-env'
 import { createServer, Server } from 'fastify-micro'
+import fastifyStatic from 'fastify-static'
 import { MetricsDecoration } from './plugins/metrics'
 import { RedisDecoration, checkRedisHealth } from './plugins/redis'
 
@@ -42,6 +43,11 @@ export default function createApp() {
       app.register(require('./plugins/redis').default)
       app.register(require('./plugins/metrics').default)
     }
+  })
+
+  app.register(fastifyStatic, {
+    root: path.resolve(__dirname, '../public'),
+    wildcard: false
   })
 
   app.addHook('onClose', async (_, done) => {
