@@ -26,7 +26,7 @@ test('Health check', async () => {
   expect(res.status).toEqual(200)
 })
 
-test('Push to unexisting project', async () => {
+test('Push invalid data', async () => {
   const res = await ctx.api.post('/foo', 'gibberish')
   expect(res.status).toEqual(204)
   const data = await ctx.redis.llen('foo.data')
@@ -42,21 +42,17 @@ test('Get project config', async () => {
   expect(received).toEqual(expected)
 })
 
-test('Push from invalid origin', async () => {
-  const res = await ctx.api.post('/foo', 'gibberish', {
-    headers: {
-      origin: 'https://egg.com'
-    }
-  })
+test('Push to unexisting project', async () => {
+  const res = await ctx.api.post('/doesnotexist', 'v1.naclbox.payload')
   expect(res.status).toEqual(204)
-  const data = await ctx.redis.llen('foo.data')
+  const data = await ctx.redis.llen('doesnotexist.data')
   expect(data).toBe(0)
 })
 
-test('Push invalid data', async () => {
-  const res = await ctx.api.post('/foo', 'gibberish', {
+test('Push from invalid origin', async () => {
+  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar', {
     headers: {
-      origin: 'https://foo.com'
+      origin: 'https://egg.com'
     }
   })
   expect(res.status).toEqual(204)
@@ -196,4 +192,13 @@ test('Rate Limit should impact projects independently', async () => {
     })
     expect(res.status).toEqual(204)
   }
+})
+
+test('Push via a GET request', async () => {
+  const config: ProjectConfig = {
+    origins: ['https://spam.com']
+  }
+  await ctx.redis.set('spam.config', JSON.stringify(config))
+  await ctx.api.get('/spam?payload=v1.naclbox.test')
+  expect(await ctx.redis.llen('spam.data')).toEqual(1)
 })
