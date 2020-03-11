@@ -9,6 +9,8 @@ export type MetricsDecoration = {
 }
 
 export enum Metrics {
+  receivedCount = 'received_count',
+  droppedCount = 'dropped_count',
   invalidProjectConfig = 'invalid_projectConfig',
   invalidOrigin = 'invalid_origin',
   invalidPayload = 'invalid_payload',

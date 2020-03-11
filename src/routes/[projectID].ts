@@ -37,6 +37,7 @@ async function processIncomingMessage(
   country?: string
 ) {
   try {
+    app.metrics.increment(Metrics.receivedCount, projectID)
     if (!payload?.startsWith('v1.naclbox.')) {
       // Drop invalid payload format
       req.log.warn({
@@ -49,12 +50,14 @@ async function processIncomingMessage(
         projectID,
         payload
       })
+      app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
 
     const projectConfig = await getProjectConfig(projectID, app, req)
     if (projectConfig === null) {
       app.metrics.increment(Metrics.invalidProjectConfig, projectID)
+      app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
     if (
@@ -76,6 +79,7 @@ async function processIncomingMessage(
         requestOrigin,
         projectOrigins
       })
+      app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
 
@@ -106,6 +110,7 @@ async function processIncomingMessage(
           projectID,
           nextMidnightUTC - now
         )
+        app.metrics.increment(Metrics.droppedCount, projectID)
         return
       }
     }
@@ -140,6 +145,7 @@ async function processIncomingMessage(
     app.sentry.report(error, req, {
       projectID
     })
+    app.metrics.increment(Metrics.droppedCount, projectID)
   }
 }
 
