@@ -60,6 +60,17 @@ test('Push from invalid origin', async () => {
   expect(data).toBe(0)
 })
 
+test('Push from localhost should be ignored', async () => {
+  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar', {
+    headers: {
+      origin: 'http://localhost:1234'
+    }
+  })
+  expect(res.status).toEqual(204)
+  const data = await ctx.redis.llen('foo.data')
+  expect(data).toBe(0)
+})
+
 test('Push valid data', async () => {
   const tick = Date.now()
   const res = await ctx.api.post('/foo', 'v1.naclbox.foobar', {

@@ -64,9 +64,20 @@ async function processIncomingMessage(
       req.headers['origin'] &&
       !projectConfig.origins.includes(req.headers['origin'])
     ) {
-      // Drop invalid origin
-      const requestOrigin = req.headers['origin']
+      const requestOrigin: string = req.headers['origin']
       const projectOrigins = projectConfig.origins
+      if (requestOrigin.match(/^http(s)?:\/\/(localhost|127\.0\.0\.1)/)) {
+        // Ignore localhost (tracking script used in development)
+        req.log.warn({
+          msg: 'Ignoring localhost origin',
+          projectID,
+          requestOrigin,
+          projectOrigins
+        })
+        app.metrics.increment(Metrics.droppedCount, projectID)
+        return
+      }
+      // Drop invalid origin
       req.log.warn({
         msg: 'Invalid origin',
         projectID,
