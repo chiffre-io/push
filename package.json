@@ -21,6 +21,7 @@
     "dev": "nodemon -e ts,.env -w .env -w ./src ./src/main.ts",
     "clean": "rm -rf lib dist coverage",
     "build:ts": "tsc",
+    "logs": "clever logs | cut -c 27-",
     "build:exports": "cp -f ./lib/exports.js ./dist/exports.js",
     "build": "run-s clean build:ts build:exports",
     "ci": "run-s build e2e:test",
