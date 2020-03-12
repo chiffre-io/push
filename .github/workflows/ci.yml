@@ -13,8 +13,6 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-latest
-    env:
-      CI: true
     steps:
       - id: yarn-cache
         name: Get Yarn cache path

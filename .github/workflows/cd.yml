@@ -12,8 +12,6 @@ jobs:
   cd:
     name: Continuous Delivery
     runs-on: ubuntu-latest
-    env:
-      CI: true
     steps:
       - id: yarn-cache
         name: Get Yarn cache path
