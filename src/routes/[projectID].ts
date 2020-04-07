@@ -36,6 +36,9 @@ async function processIncomingMessage(
   perf: number,
   country?: string
 ) {
+  const trackerVersion: string | undefined = req.headers['x-chiffre-version']
+  const trackerXHR: string | undefined = req.headers['x-chiffre-xhr']
+
   try {
     app.metrics.increment(Metrics.receivedCount, projectID)
     if (!payload?.startsWith('v1.naclbox.')) {
@@ -43,12 +46,16 @@ async function processIncomingMessage(
       req.log.warn({
         msg: 'Invalid payload format',
         projectID,
-        payload
+        payload,
+        trackerVersion,
+        trackerXHR
       })
       app.metrics.increment(Metrics.invalidPayload, projectID)
       app.sentry.report(new Error('Invalid payload format'), req, {
         projectID,
-        payload
+        payload,
+        trackerVersion,
+        trackerXHR
       })
       app.metrics.increment(Metrics.droppedCount, projectID)
       return
@@ -72,7 +79,9 @@ async function processIncomingMessage(
           msg: 'Ignoring localhost origin',
           projectID,
           requestOrigin,
-          projectOrigins
+          projectOrigins,
+          trackerVersion,
+          trackerXHR
         })
         app.metrics.increment(Metrics.droppedCount, projectID)
         return
@@ -82,13 +91,17 @@ async function processIncomingMessage(
         msg: 'Invalid origin',
         projectID,
         requestOrigin,
-        projectOrigins
+        projectOrigins,
+        trackerVersion,
+        trackerXHR
       })
       app.metrics.increment(Metrics.invalidOrigin, projectID)
       app.sentry.report(new Error('Invalid origin'), req, {
         projectID,
         requestOrigin,
-        projectOrigins
+        projectOrigins,
+        trackerVersion,
+        trackerXHR
       })
       app.metrics.increment(Metrics.droppedCount, projectID)
       return
@@ -154,7 +167,9 @@ async function processIncomingMessage(
   } catch (error) {
     req.log.error(error)
     app.sentry.report(error, req, {
-      projectID
+      projectID,
+      trackerVersion,
+      trackerXHR
     })
     app.metrics.increment(Metrics.droppedCount, projectID)
   }
@@ -166,7 +181,7 @@ export default async function projectIDRoutes(app: App) {
   app.register(rateLimit, {
     global: false,
     redis: app.redis.rateLimit,
-    keyGenerator: function(req: any) {
+    keyGenerator: (req: any) => {
       return `push:${req.params.projectID}:${req.id.split('.')[0]}`
     }
   })
@@ -176,8 +191,6 @@ export default async function projectIDRoutes(app: App) {
       rateLimit: {
         max: RATE_LIMIT_REQUESTS_PER_MINUTE,
         timeWindow: 60_000 // 1 minute
-        // todo: Wait for fastify/fastify-rate-limit#77 to merge
-        // then use a string again
       }
     }
   }
@@ -210,13 +223,15 @@ export default async function projectIDRoutes(app: App) {
       const { projectID } = req.params
       const country: string | undefined = req.headers['cf-ipcountry']
       const payload = req.body as string
-      const { perf } = req.query
+      const { perf: perfQuery } = req.query
+      const perfHeader = req.headers['x-chiffre-perf'] as string
+      const perf = perfHeader || perfQuery || '-1'
       await processIncomingMessage(
         app,
         req,
         projectID,
         payload,
-        parseInt(perf || '-1') || -1,
+        parseInt(perf) || -1,
         country
       )
       return res.status(204).send()

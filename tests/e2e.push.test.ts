@@ -213,3 +213,49 @@ test('Push via a GET request', async () => {
   await ctx.api.get('/spam?payload=v1.naclbox.test')
   expect(await ctx.redis.llen('spam.data')).toEqual(1)
 })
+
+test('Perf via query string', async () => {
+  await ctx.api.post('/spam?perf=42', 'v1.naclbox.spam')
+  const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
+  expect(obj.perf).toEqual(42)
+})
+
+test('Perf via header (number)', async () => {
+  await ctx.api.post('/spam', 'v1.naclbox.spam', {
+    headers: {
+      'x-chiffre-perf': 12
+    }
+  })
+  const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
+  expect(obj.perf).toEqual(12)
+})
+
+test('Perf via header (string)', async () => {
+  await ctx.api.post('/spam', 'v1.naclbox.spam', {
+    headers: {
+      'x-chiffre-perf': '12'
+    }
+  })
+  const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
+  expect(obj.perf).toEqual(12)
+})
+
+test('Perf via header (case-insensitive)', async () => {
+  await ctx.api.post('/spam', 'v1.naclbox.spam', {
+    headers: {
+      'X-Chiffre-Perf': 12
+    }
+  })
+  const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
+  expect(obj.perf).toEqual(12)
+})
+
+test('Perf via header & query: header takes precendence', async () => {
+  await ctx.api.post('/spam?perf=12', 'v1.naclbox.spam', {
+    headers: {
+      'X-Chiffre-Perf': 42
+    }
+  })
+  const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
+  expect(obj.perf).toEqual(42)
+})
