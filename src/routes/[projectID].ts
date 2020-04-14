@@ -14,6 +14,8 @@ import { Metrics } from '../plugins/metrics'
 
 interface QueryParams {
   perf?: string
+  v?: string
+  xhr?: string
 }
 
 interface GetQueryParams extends QueryParams {
@@ -30,15 +32,14 @@ export const RATE_LIMIT_REQUESTS_PER_MINUTE = 200
 
 async function processIncomingMessage(
   app: App,
-  req: FastifyRequest,
+  req: FastifyRequest<any, QueryParams>,
   projectID: string,
   payload: string,
-  perf: number,
   country?: string
 ) {
-  const trackerVersion: string | undefined = req.headers['x-chiffre-version']
-  const trackerXHR: string | undefined = req.headers['x-chiffre-xhr']
-
+  const perf = parseInt(req.query.perf || '-1') || -1
+  const trackerVersion = req.query.v
+  const trackerXHR = req.query.xhr
   try {
     app.metrics.increment(Metrics.receivedCount, projectID)
     if (!payload?.startsWith('v1.naclbox.')) {
@@ -200,17 +201,9 @@ export default async function projectIDRoutes(app: App) {
     commonConfig,
     async (req, res) => {
       const { projectID } = req.params
-      const { payload, perf } = req.query
+      const { payload } = req.query
       const country: string | undefined = req.headers['cf-ipcountry']
-
-      await processIncomingMessage(
-        app,
-        req,
-        projectID,
-        payload,
-        parseInt(perf || '-1') || -1,
-        country
-      )
+      await processIncomingMessage(app, req, projectID, payload, country)
       res.header('cache-control', 'private, no-cache, proxy-revalidate')
       return res.status(204).send()
     }
@@ -223,17 +216,7 @@ export default async function projectIDRoutes(app: App) {
       const { projectID } = req.params
       const country: string | undefined = req.headers['cf-ipcountry']
       const payload = req.body as string
-      const { perf: perfQuery } = req.query
-      const perfHeader = req.headers['x-chiffre-perf'] as string
-      const perf = perfHeader || perfQuery || '-1'
-      await processIncomingMessage(
-        app,
-        req,
-        projectID,
-        payload,
-        parseInt(perf) || -1,
-        country
-      )
+      await processIncomingMessage(app, req, projectID, payload, country)
       return res.status(204).send()
     }
   )
