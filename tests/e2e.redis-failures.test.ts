@@ -17,6 +17,6 @@ test('Redis failure on get', async () => {
   ctx.server.redis.ingress.get = () => {
     throw new Error('oh no')
   }
-  const res = await ctx.api.post('/bar', 'gibberish')
+  const res = await ctx.api.post('/event/bar', 'gibberish')
   expect(res.status).toEqual(204)
 })

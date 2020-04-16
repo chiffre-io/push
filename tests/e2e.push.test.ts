@@ -27,7 +27,7 @@ test('Health check', async () => {
 })
 
 test('Push invalid data', async () => {
-  const res = await ctx.api.post('/foo', 'gibberish')
+  const res = await ctx.api.post('/event/foo', 'gibberish')
   expect(res.status).toEqual(204)
   const data = await ctx.redis.llen('foo.data')
   expect(data).toBe(0)
@@ -43,14 +43,14 @@ test('Get project config', async () => {
 })
 
 test('Push to unexisting project', async () => {
-  const res = await ctx.api.post('/doesnotexist', 'v1.naclbox.payload')
+  const res = await ctx.api.post('/event/doesnotexist', 'v1.naclbox.payload')
   expect(res.status).toEqual(204)
   const data = await ctx.redis.llen('doesnotexist.data')
   expect(data).toBe(0)
 })
 
 test('Push from invalid origin', async () => {
-  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar', {
+  const res = await ctx.api.post('/event/foo', 'v1.naclbox.foobar', {
     headers: {
       origin: 'https://egg.com'
     }
@@ -61,7 +61,7 @@ test('Push from invalid origin', async () => {
 })
 
 test('Push from localhost should be ignored', async () => {
-  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar', {
+  const res = await ctx.api.post('/event/foo', 'v1.naclbox.foobar', {
     headers: {
       origin: 'http://localhost:1234'
     }
@@ -73,7 +73,7 @@ test('Push from localhost should be ignored', async () => {
 
 test('Push valid data', async () => {
   const tick = Date.now()
-  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar', {
+  const res = await ctx.api.post('/event/foo', 'v1.naclbox.foobar', {
     headers: {
       origin: 'https://foo.com'
     }
@@ -89,7 +89,7 @@ test('Push valid data', async () => {
 })
 
 test('Push from missing origin is accepted', async () => {
-  const res = await ctx.api.post('/foo', 'v1.naclbox.foobar')
+  const res = await ctx.api.post('/event/foo', 'v1.naclbox.foobar')
   expect(res.status).toEqual(204)
   const data = await ctx.redis.llen('foo.data')
   expect(data).toBe(1)
@@ -99,7 +99,7 @@ test('Publish new data notification', async () => {
   await ctx.redis.subscribe(PubSubChannels.newDataAvailable)
   const onMessage = jest.fn()
   ctx.redis.on('message', onMessage)
-  await ctx.api.post('/foo', 'v1.naclbox.foobar', {
+  await ctx.api.post('/event/foo', 'v1.naclbox.foobar', {
     headers: {
       origin: 'https://foo.com'
     }
@@ -119,12 +119,12 @@ test('Limits - Push message under limit', async () => {
   await ctx.redis.subscribe(PubSubChannels.newDataAvailable)
   const onMessage = jest.fn()
   ctx.redis.on('message', onMessage)
-  await ctx.api.post('/bar', 'v1.naclbox.msg1', {
+  await ctx.api.post('/event/bar', 'v1.naclbox.msg1', {
     headers: {
       origin: 'https://bar.com'
     }
   })
-  await ctx.api.post('/bar', 'v1.naclbox.msg2', {
+  await ctx.api.post('/event/bar', 'v1.naclbox.msg2', {
     headers: {
       origin: 'https://bar.com'
     }
@@ -144,7 +144,7 @@ test('Limits - Push message over limit - does not call newDataAvailable', async 
   await ctx.redis.subscribe(PubSubChannels.newDataAvailable)
   const onMessage = jest.fn()
   ctx.redis.on('message', onMessage)
-  await ctx.api.post('/bar', 'v1.naclbox.msg3', {
+  await ctx.api.post('/event/bar', 'v1.naclbox.msg3', {
     headers: {
       origin: 'https://bar.com'
     }
@@ -160,7 +160,7 @@ test('Limits - Push message over limit - calls overLimit', async () => {
   await ctx.redis.subscribe(PubSubChannels.overLimit)
   const onMessage = jest.fn()
   ctx.redis.on('message', onMessage)
-  await ctx.api.post('/bar', 'v1.naclbox.msg4', {
+  await ctx.api.post('/event/bar', 'v1.naclbox.msg4', {
     headers: {
       origin: 'https://bar.com'
     }
@@ -180,7 +180,7 @@ test('Rate Limit should impact projects independently', async () => {
   }
   await ctx.redis.set('egg.config', JSON.stringify(config))
   for (let i = 0; i < RATE_LIMIT_REQUESTS_PER_MINUTE; ++i) {
-    const res = await ctx.api.post('/egg', 'v1.naclbox.egg', {
+    const res = await ctx.api.post('/event/egg', 'v1.naclbox.egg', {
       headers: {
         origin: 'https://egg.com'
       }
@@ -188,7 +188,7 @@ test('Rate Limit should impact projects independently', async () => {
     expect(res.status).toEqual(204)
   }
   {
-    const res = await ctx.api.post('/egg', 'v1.naclbox.egg', {
+    const res = await ctx.api.post('/event/egg', 'v1.naclbox.egg', {
       headers: {
         origin: 'https://egg.com'
       }
@@ -196,7 +196,7 @@ test('Rate Limit should impact projects independently', async () => {
     expect(res.status).toEqual(429) // Too many requests
   }
   {
-    const res = await ctx.api.post('/bar', 'v1.naclbox.bar', {
+    const res = await ctx.api.post('/event/bar', 'v1.naclbox.bar', {
       headers: {
         origin: 'https://bar.com'
       }
@@ -210,12 +210,12 @@ test('Push via a GET request', async () => {
     origins: ['https://spam.com']
   }
   await ctx.redis.set('spam.config', JSON.stringify(config))
-  await ctx.api.get('/spam?payload=v1.naclbox.test')
+  await ctx.api.get('/event/spam?payload=v1.naclbox.test')
   expect(await ctx.redis.llen('spam.data')).toEqual(1)
 })
 
 test('Perf via query string', async () => {
-  await ctx.api.post('/spam?perf=42', 'v1.naclbox.spam')
+  await ctx.api.post('/event/spam?perf=42', 'v1.naclbox.spam')
   const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
   expect(obj.perf).toEqual(42)
 })
