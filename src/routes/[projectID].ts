@@ -42,9 +42,27 @@ async function processIncomingMessage(
   const trackerXHR = req.query.xhr
   try {
     app.metrics.increment(Metrics.receivedCount, projectID)
-    if (!payload?.startsWith('v1.naclbox.')) {
-      // Drop invalid payload format
+    if (payload === undefined) {
       req.log.warn({
+        msg: 'Missing payload',
+        projectID,
+        payload,
+        trackerVersion,
+        trackerXHR
+      })
+      app.metrics.increment(Metrics.missingPayload, projectID)
+      app.sentry.report(new Error('Missing payload'), req, {
+        projectID,
+        payload,
+        trackerVersion,
+        trackerXHR
+      })
+      app.metrics.increment(Metrics.droppedCount, projectID)
+      return
+    }
+    if (!payload.startsWith('v1.naclbox.')) {
+      // Drop invalid payload format
+      req.log.error({
         msg: 'Invalid payload format',
         projectID,
         payload,
