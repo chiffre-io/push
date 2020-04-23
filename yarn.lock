@@ -1921,9 +1921,9 @@ end-of-stream@^1.1.0:
     once "^1.4.0"
 
 env-alias@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/env-alias/-/env-alias-1.0.0.tgz#becede253862e42f2b272fb2043e0b4df6c3156c"
-  integrity sha512-9TWN/z5rgKCaqBmSRsGJrnR841tnARJtDo/F7dal9ymRCV5/+2M6bXMrND8af+7OMT+QY8GYh9PQT+1Rs+rmxQ==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/env-alias/-/env-alias-1.0.1.tgz#805cdf8f93b9dad7fabc49516020873686f047a2"
+  integrity sha512-+/p65eAyXjZzjOOjE6I1ooZJz+5k21TpmtPB54+t+Tls9YJDItN90BmQPBEZ2zdwy6nVKPUEoYL7VcR3z8BTRw==
 
 error-ex@^1.3.1:
   version "1.3.2"
