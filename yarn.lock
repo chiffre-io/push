@@ -3,9 +3,9 @@
 
 
 "@47ng/check-env@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@47ng/check-env/-/check-env-2.0.0.tgz#ab377a39fa4ed6f59756e0bd4c31fa7776d636fc"
-  integrity sha512-vn5+ofKOQW5dW2G51ZvWfqaHfEXcHQZ5w+RW03SepBEML96FssVV/EQ4yQJu+GBCE5sehBkjouD/2Fy0jgjwqg==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@47ng/check-env/-/check-env-2.0.1.tgz#f969aab80d7eeb4194c53bc69451b8cefdd69777"
+  integrity sha512-4nvyNY3fQs4SnTyVxpjpPoBwYfsGbM2TDAidZg+vYM/HTD126JOpw8sv+44U+V3WiqaDYhrzJXhkSSLCbZWDJw==
 
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
