@@ -36,6 +36,12 @@ export interface ProjectConfig {
    * Limit the ingress per rolling 24h to a given number of messages
    */
   dailyLimit?: number
+
+  /**
+   * The project public key for encrypting messages server-side
+   * in a <noscript> context.
+   */
+  publicKey?: string
 }
 
 export enum KeyIDs {

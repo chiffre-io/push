@@ -32,6 +32,8 @@
   },
   "dependencies": {
     "@47ng/check-env": "^2.0.0",
+    "@chiffre/analytics-core": "^1.2.0",
+    "@chiffre/crypto-box": "^1.0.1",
     "dayjs": "^1.8.20",
     "dotenv": "^8.2.0",
     "env-alias": "^1.0.0",

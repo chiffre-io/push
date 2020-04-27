@@ -7,6 +7,14 @@
   resolved "https://registry.yarnpkg.com/@47ng/check-env/-/check-env-2.0.1.tgz#f969aab80d7eeb4194c53bc69451b8cefdd69777"
   integrity sha512-4nvyNY3fQs4SnTyVxpjpPoBwYfsGbM2TDAidZg+vYM/HTD126JOpw8sv+44U+V3WiqaDYhrzJXhkSSLCbZWDJw==
 
+"@47ng/codec@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@47ng/codec/-/codec-0.5.0.tgz#28294e5c76170ed9a1403a5bbbb9e129c11b94ce"
+  integrity sha512-k/+OCuagLqv52RLrbzrRv+4qL68Y/1xm1EGu4N0nUXTjzVHZ6YQmo/aWNDAChcL+CP+fyNq1BDqLttHDzbfzSA==
+  dependencies:
+    "@stablelib/base64" "^1.0.0"
+    "@stablelib/hex" "^1.0.0"
+
 "@babel/code-frame@^7.0.0", "@babel/code-frame@^7.5.5":
   version "7.5.5"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.5.5.tgz#bc0782f6d69f7b7d49531219699b988f669a8f9d"
@@ -331,6 +339,21 @@
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
+
+"@chiffre/analytics-core@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@chiffre/analytics-core/-/analytics-core-1.2.0.tgz#9d59ceacd1cc5437de39457d14b91c9f99f18480"
+  integrity sha512-DBDA6KVm8lmJQfRqnXNfawbJpALoBRheIO7iOybpUzU62kmlNsENNmUXOF/buIPkZL/Kymh9JoBKtrsSeCCbZw==
+  dependencies:
+    nanoid "^3.0.2"
+
+"@chiffre/crypto-box@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@chiffre/crypto-box/-/crypto-box-1.0.1.tgz#5b084cfc24d5ffa04c1d4034671869c543c4b0dd"
+  integrity sha512-6ITQRROU/FbJKfbS3O4KvKUamsbLOV1M+4d4bvOYRJgVGbtogFhZWntdbtWV8E4qfHmKSuGFBj3R/agtGaN9iw==
+  dependencies:
+    "@47ng/codec" "^0.5.0"
+    tweetnacl "^1.0.3"
 
 "@cnakazawa/watch@^1.0.3":
   version "1.0.3"
@@ -751,6 +774,16 @@
   integrity sha512-qbk9AP+cZUsKdW1GJsBpxPKFmCJ0T8swwzVje3qFd+AkQb74Q/tiuzrdfFg8AD2g5HH/XbE/I8Uc1KYHVYWfhg==
   dependencies:
     type-detect "4.0.8"
+
+"@stablelib/base64@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/base64/-/base64-1.0.0.tgz#e08ba78078c731cbbb244530b1750659c52ba7cb"
+  integrity sha512-s/wTc/3+vYSalh4gfayJrupzhT7SDBqNtiYOeEMlkSDqL/8cExh5FAeTzLpmYq+7BLLv36EjBL5xrb0bUHWJWQ==
+
+"@stablelib/hex@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/hex/-/hex-1.0.0.tgz#9f2d21d412803e72a3bbc0ab4690e9bda0ca91cf"
+  integrity sha512-EJ9oGiuaFw/Y0cBATTxo73sgqOgdnSmZ9ftU9FND9SD51OM8wvAfS78uPy3oBNmLWc/sZK5twMbEFf/A4T2F8A==
 
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
@@ -5500,6 +5533,11 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
   integrity sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
+
+tweetnacl@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
+  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@~0.3.2:
   version "0.3.2"

@@ -1,3 +1,4 @@
+import { importKeys, decryptString } from '@chiffre/crypto-box'
 import { setup, TestContext } from './utility'
 import {
   ProjectConfig,
@@ -218,4 +219,23 @@ test('Perf via query string', async () => {
   await ctx.api.post('/event/spam?perf=42', 'v1.naclbox.spam')
   const obj = JSON.parse(await ctx.redis.lpop('spam.data'))
   expect(obj.perf).toEqual(42)
+})
+
+test('noscript route should create an encrypted message', async () => {
+  const secretKey = 'sk.eW95GIlOPGIHnfFSpaWuQuNJ03s5I_mOZSBczlEI2G4'
+  const keys = importKeys(secretKey)
+  const config: ProjectConfig = {
+    origins: ['https://tofu.com'],
+    publicKey: keys.public
+  }
+  await ctx.redis.set('tofu.config', JSON.stringify(config))
+  await ctx.api.get('/noscript/tofu')
+  expect(await ctx.redis.llen('tofu.data')).toEqual(1)
+  const message: SerializedMessage = JSON.parse(
+    await ctx.redis.lpop('tofu.data')
+  )
+  expect(message.perf).toEqual(-1)
+  const event = JSON.parse(decryptString(message.payload, keys.raw.secretKey))
+  expect(event.type).toEqual('session:noscript')
+  expect(event.data).toEqual(null)
 })

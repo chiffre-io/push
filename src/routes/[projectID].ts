@@ -1,5 +1,7 @@
 import { FastifyRequest } from 'fastify'
 import rateLimit from 'fastify-rate-limit'
+import { encryptString, parsePublicKey } from '@chiffre/crypto-box'
+import { createBrowserEvent } from '@chiffre/analytics-core'
 import { App } from '../server'
 import {
   KeyIDs,
@@ -263,4 +265,40 @@ export default async function projectIDRoutes(app: App) {
       return res.status(204).send()
     }
   )
+
+  /**
+   * This route helps getting some visit counts from clients without
+   * JavaScript enabled. An image is placed in a <noscript> section,
+   * which will hit this route.
+   * We then create an encrypted event on the server, containing nothing
+   * but the event type session:noscript.
+   * We assume that not having JS enabled reflects a desire for ultimate
+   * privacy (although ironically it makes E2EE impossible), so we treat
+   * it as a DNT event, but with a different type for distinction.
+   */
+  app.get('/noscript/:projectID', commonConfig, async (req, res) => {
+    const { projectID } = req.params
+    const projectConfig = await getProjectConfig(projectID, app, req)
+    if (projectConfig === null) {
+      app.metrics.increment(Metrics.invalidProjectConfig, projectID)
+      app.metrics.increment(Metrics.droppedCount, projectID)
+      return res.status(204).send()
+    }
+    if (!projectConfig.publicKey) {
+      req.log.warn({
+        msg: 'Missing public key in Redis config',
+        projectID
+      })
+      app.metrics.increment(Metrics.invalidProjectConfig, projectID)
+      app.metrics.increment(Metrics.droppedCount, projectID)
+      return res.status(204).send()
+    }
+    const payloadEvent = createBrowserEvent('session:noscript', null)
+    const publicKey = parsePublicKey(projectConfig.publicKey)
+    const payload = encryptString(JSON.stringify(payloadEvent), publicKey)
+    const country: string | undefined = req.headers['cf-ipcountry']
+    await processIncomingMessage(app, req, projectID, payload, country)
+    res.header('cache-control', 'private, no-cache, proxy-revalidate')
+    return res.status(204).send()
+  })
 }
