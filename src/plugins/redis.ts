@@ -19,7 +19,9 @@ export default fp(function redisPlugin(app, _, next) {
       error
     })
     ;(app as App).sentry.report(error, undefined, {
-      redis: 'ingress'
+      tags: {
+        redis: 'ingress'
+      }
     })
   })
   const decoration: RedisDecoration = {
@@ -51,8 +53,10 @@ export async function getProjectConfig(
       configKey
     })
     app.sentry.report(error, req, {
-      projectID,
-      configKey
+      tags: {
+        projectID,
+        configKey
+      }
     })
     return null
   }

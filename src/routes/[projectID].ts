@@ -44,6 +44,13 @@ async function processIncomingMessage(
   const trackerXHR = req.query.xhr
   try {
     app.metrics.increment(Metrics.receivedCount, projectID)
+    app.metrics.histogram(
+      Metrics.trackerScriptVersion,
+      projectID,
+      trackerVersion
+    )
+    app.metrics.histogram(Metrics.xhrType, projectID, trackerXHR)
+    app.metrics.histogram(Metrics.dnt, projectID, req.headers.dnt === '1')
     if (payload === undefined) {
       req.log.warn({
         msg: 'Missing payload',
@@ -54,10 +61,11 @@ async function processIncomingMessage(
       })
       app.metrics.increment(Metrics.missingPayload, projectID)
       app.sentry.report(new Error('Missing payload'), req, {
-        projectID,
-        payload,
-        trackerVersion,
-        trackerXHR
+        tags: {
+          projectID,
+          trackerVersion: trackerVersion || 'unknown',
+          trackerXHR: trackerXHR || 'unknown'
+        }
       })
       app.metrics.increment(Metrics.droppedCount, projectID)
       return
@@ -73,10 +81,12 @@ async function processIncomingMessage(
       })
       app.metrics.increment(Metrics.invalidPayload, projectID)
       app.sentry.report(new Error('Invalid payload format'), req, {
-        projectID,
-        payload,
-        trackerVersion,
-        trackerXHR
+        tags: {
+          projectID,
+          payload,
+          trackerVersion: trackerVersion || 'unknown',
+          trackerXHR: trackerXHR || 'unknown'
+        }
       })
       app.metrics.increment(Metrics.droppedCount, projectID)
       return
@@ -118,11 +128,15 @@ async function processIncomingMessage(
       })
       app.metrics.increment(Metrics.invalidOrigin, projectID)
       app.sentry.report(new Error('Invalid origin'), req, {
-        projectID,
-        requestOrigin,
-        projectOrigins,
-        trackerVersion,
-        trackerXHR
+        tags: {
+          projectID,
+          requestOrigin,
+          trackerVersion: trackerVersion || 'unknown',
+          trackerXHR: trackerXHR || 'unknown'
+        },
+        context: {
+          projectOrigins
+        }
       })
       app.metrics.increment(Metrics.droppedCount, projectID)
       return
@@ -188,9 +202,11 @@ async function processIncomingMessage(
   } catch (error) {
     req.log.error(error)
     app.sentry.report(error, req, {
-      projectID,
-      trackerVersion,
-      trackerXHR
+      tags: {
+        projectID,
+        trackerVersion: trackerVersion || 'unknown',
+        trackerXHR: trackerXHR || 'unknown'
+      }
     })
     app.metrics.increment(Metrics.droppedCount, projectID)
   }
@@ -296,6 +312,7 @@ export default async function projectIDRoutes(app: App) {
     const payloadEvent = createBrowserEvent('session:noscript', null)
     const publicKey = parsePublicKey(projectConfig.publicKey)
     const payload = encryptString(JSON.stringify(payloadEvent), publicKey)
+    req.query.xhr = 'noscript'
     const country: string | undefined = req.headers['cf-ipcountry']
     await processIncomingMessage(app, req, projectID, payload, country)
     res.header('cache-control', 'private, no-cache, proxy-revalidate')

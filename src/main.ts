@@ -10,7 +10,6 @@ if (require.main === module) {
   dotenv.config()
   envAlias()
 
-  const port = parseInt(process.env.PORT || '3000')
   const server = createServer()
-  startServer(server, port)
+  startServer(server)
 }

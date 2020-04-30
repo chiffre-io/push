@@ -21,7 +21,10 @@ export enum Metrics {
   processedCount = 'processed_count',
   processedPerf = 'processed_perf',
   processedSize = 'processed_size',
-  processedCountry = 'processed_country'
+  processedCountry = 'processed_country',
+  trackerScriptVersion = 'tracker_script_version',
+  xhrType = 'xhr_type',
+  dnt = 'dnt'
 }
 
 export default fp(function metricsPlugin(app, _, next) {
