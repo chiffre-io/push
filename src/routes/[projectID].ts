@@ -264,6 +264,17 @@ export default async function projectIDRoutes(app: App) {
       const { projectID } = req.params
       const { payload } = req.query
       const country: string | undefined = req.headers['cf-ipcountry']
+      // Handle badly-written Bing scrapers
+      if (
+        req.headers['user-agent'] ===
+          'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b' &&
+        payload === undefined
+      ) {
+        req.log.info({
+          msg: 'Bing crawler',
+          body: req.body
+        })
+      }
       await processIncomingMessage(app, req, projectID, payload, country)
       res.header('cache-control', 'private, no-cache, proxy-revalidate')
       return res.status(204).send()
