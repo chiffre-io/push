@@ -2,7 +2,7 @@ import { App } from '../server'
 import { Metrics } from '../plugins/metrics'
 
 export default async function projectIDRoutes(app: App) {
-  app.get(
+  app.all(
     '*',
     {
       logLevel: 'warn'
