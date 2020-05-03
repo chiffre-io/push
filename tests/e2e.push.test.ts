@@ -239,3 +239,13 @@ test('noscript route should create an encrypted message', async () => {
   expect(event.type).toEqual('session:noscript')
   expect(event.data).toEqual(null)
 })
+
+test('Catch-all route generates no events', async () => {
+  const config: ProjectConfig = {
+    origins: ['https://spam.com']
+  }
+  await ctx.redis.del('spam.data')
+  await ctx.redis.set('spam.config', JSON.stringify(config))
+  await ctx.api.get('/spam')
+  expect(await ctx.redis.llen('spam.data')).toEqual(0)
+})
