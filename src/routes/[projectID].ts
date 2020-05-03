@@ -232,30 +232,30 @@ export default async function projectIDRoutes(app: App) {
     }
   }
 
-  app.get<GetQueryParams, UrlParams>(
-    '/:projectID',
-    commonConfig,
-    async (req, res) => {
-      const { projectID } = req.params
-      const { payload } = req.query
-      const country: string | undefined = req.headers['cf-ipcountry']
-      await processIncomingMessage(app, req, projectID, payload, country)
-      res.header('cache-control', 'private, no-cache, proxy-revalidate')
-      return res.status(204).send()
-    }
-  )
+  // app.get<GetQueryParams, UrlParams>(
+  //   '/:projectID',
+  //   commonConfig,
+  //   async (req, res) => {
+  //     const { projectID } = req.params
+  //     const { payload } = req.query
+  //     const country: string | undefined = req.headers['cf-ipcountry']
+  //     await processIncomingMessage(app, req, projectID, payload, country)
+  //     res.header('cache-control', 'private, no-cache, proxy-revalidate')
+  //     return res.status(204).send()
+  //   }
+  // )
 
-  app.post<QueryParams, UrlParams>(
-    '/:projectID',
-    commonConfig,
-    async (req, res) => {
-      const { projectID } = req.params
-      const country: string | undefined = req.headers['cf-ipcountry']
-      const payload = req.body as string
-      await processIncomingMessage(app, req, projectID, payload, country)
-      return res.status(204).send()
-    }
-  )
+  // app.post<QueryParams, UrlParams>(
+  //   '/:projectID',
+  //   commonConfig,
+  //   async (req, res) => {
+  //     const { projectID } = req.params
+  //     const country: string | undefined = req.headers['cf-ipcountry']
+  //     const payload = req.body as string
+  //     await processIncomingMessage(app, req, projectID, payload, country)
+  //     return res.status(204).send()
+  //   }
+  // )
 
   app.get<GetQueryParams, UrlParams>(
     '/event/:projectID',
