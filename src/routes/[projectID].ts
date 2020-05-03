@@ -60,6 +60,7 @@ async function processIncomingMessage(
         trackerXHR
       })
       app.metrics.increment(Metrics.missingPayload, projectID)
+      app.metrics.increment(Metrics.droppedCount, projectID)
       app.sentry.report(new Error('Missing payload'), req, {
         tags: {
           projectID,
@@ -67,7 +68,6 @@ async function processIncomingMessage(
           trackerXHR: trackerXHR || 'unknown'
         }
       })
-      app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
     if (!payload.startsWith('v1.naclbox.')) {
@@ -80,6 +80,7 @@ async function processIncomingMessage(
         trackerXHR
       })
       app.metrics.increment(Metrics.invalidPayload, projectID)
+      app.metrics.increment(Metrics.droppedCount, projectID)
       app.sentry.report(new Error('Invalid payload format'), req, {
         tags: {
           projectID,
@@ -88,7 +89,6 @@ async function processIncomingMessage(
           trackerXHR: trackerXHR || 'unknown'
         }
       })
-      app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
 
@@ -127,6 +127,7 @@ async function processIncomingMessage(
         trackerXHR
       })
       app.metrics.increment(Metrics.invalidOrigin, projectID)
+      app.metrics.increment(Metrics.droppedCount, projectID)
       app.sentry.report(new Error('Invalid origin'), req, {
         tags: {
           projectID,
@@ -138,7 +139,6 @@ async function processIncomingMessage(
           projectOrigins
         }
       })
-      app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
 
@@ -162,6 +162,7 @@ async function processIncomingMessage(
           .incr(countKey)
           .pexpireat(countKey, nextMidnightUTC)
           .exec()
+        app.metrics.increment(Metrics.droppedCount, projectID)
         app.metrics.increment(Metrics.overUsageCount, projectID)
         app.metrics.gauge(Metrics.overUsageUsage, projectID, usage)
         app.metrics.gauge(
@@ -169,7 +170,6 @@ async function processIncomingMessage(
           projectID,
           nextMidnightUTC - now
         )
-        app.metrics.increment(Metrics.droppedCount, projectID)
         return
       }
     }
@@ -201,6 +201,7 @@ async function processIncomingMessage(
     }
   } catch (error) {
     req.log.error(error)
+    app.metrics.increment(Metrics.droppedCount, projectID)
     app.sentry.report(error, req, {
       tags: {
         projectID,
@@ -208,7 +209,6 @@ async function processIncomingMessage(
         trackerXHR: trackerXHR || 'unknown'
       }
     })
-    app.metrics.increment(Metrics.droppedCount, projectID)
   }
 }
 
