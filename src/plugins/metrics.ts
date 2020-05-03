@@ -6,6 +6,7 @@ export type MetricsDecoration = {
   time: (stat: Metrics, projectID: string, time: number) => void
   gauge: (stat: Metrics, projectID: string, value: any) => void
   histogram: (stat: Metrics, projectID: string, value: any) => void
+  raw: StatsD
 }
 
 export enum Metrics {
@@ -24,7 +25,8 @@ export enum Metrics {
   processedCountry = 'processed_country',
   trackerScriptVersion = 'tracker_script_version',
   xhrType = 'xhr_type',
-  dnt = 'dnt'
+  dnt = 'dnt',
+  catchAll = 'catch_all'
 }
 
 export default fp(function metricsPlugin(app, _, next) {
@@ -36,6 +38,7 @@ export default fp(function metricsPlugin(app, _, next) {
   })
 
   const decoration: MetricsDecoration = {
+    raw: client,
     increment: function increment(metric, projectID) {
       client.increment(metric)
       client.increment(`${metric}_${projectID}`)
