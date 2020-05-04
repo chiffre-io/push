@@ -241,11 +241,12 @@ export default async function projectIDRoutes(app: App) {
       const { payload } = req.query
       const country: string | undefined = req.headers['cf-ipcountry']
       // Ignore badly-written Bing scrapers
+      /* istanbul ignore next */
       if (
         req.headers['user-agent'] ===
           'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/534+ (KHTML, like Gecko) BingPreview/1.0b' &&
-        !!payload &&
-        !!req.body
+        !payload &&
+        !req.body
       ) {
         return res.status(204).send()
       }
