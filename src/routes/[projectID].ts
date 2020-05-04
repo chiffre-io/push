@@ -36,7 +36,7 @@ async function processIncomingMessage(
   app: App,
   req: FastifyRequest<any, QueryParams>,
   projectID: string,
-  payload: string,
+  payload: string | undefined | null,
   country?: string
 ) {
   const perf = parseInt(req.query.perf || '-1') || -1
@@ -51,7 +51,7 @@ async function processIncomingMessage(
     )
     app.metrics.histogram(Metrics.xhrType, projectID, trackerXHR)
     app.metrics.histogram(Metrics.dnt, projectID, req.headers.dnt === '1')
-    if (payload === undefined) {
+    if (!payload) {
       req.log.warn({
         msg: 'Missing payload',
         projectID,
