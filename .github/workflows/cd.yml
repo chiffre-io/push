@@ -52,8 +52,8 @@ jobs:
         if: steps.semantic.outputs.new-release-published == 'true'
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: 47ng
-          SENTRY_PROJECT: chiffre
+          SENTRY_ORG: chiffre
+          SENTRY_PROJECT: push
         with:
           tagName: ${{ steps.sentry-release.outputs.id }}
           environment: production
