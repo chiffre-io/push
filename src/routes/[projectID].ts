@@ -8,7 +8,8 @@ import {
   OverLimitStats,
   PubSubChannels,
   SerializedMessage,
-  getProjectKey
+  getProjectKey,
+  ProjectConfig
 } from '../exports'
 import { getProjectConfig } from '../plugins/redis'
 import { getNextMidnightUTC } from '../utility'
@@ -28,13 +29,131 @@ interface UrlParams {
   projectID: string
 }
 
+type Request = FastifyRequest<any, QueryParams, UrlParams>
+
 export const RATE_LIMIT_REQUESTS_PER_MINUTE = 200
+
+// --
+
+function getRequestParams(req: Request) {
+  return {
+    projectID: req.params.projectID,
+    perf: parseInt(req.query.perf || '-1') || -1,
+    trackerVersion: req.query.v,
+    trackerXHR: req.query.xhr
+  }
+}
+
+// --
+
+function isPayloadAcceptable(
+  app: App,
+  req: Request,
+  payload: string | undefined | null
+): payload is string {
+  const { projectID, trackerVersion, trackerXHR } = getRequestParams(req)
+  if (!payload) {
+    req.log.warn({
+      msg: 'Missing payload',
+      projectID,
+      payload,
+      trackerVersion,
+      trackerXHR
+    })
+    app.metrics.increment(Metrics.missingPayload, projectID)
+    app.metrics.increment(Metrics.droppedCount, projectID)
+    app.sentry.report(new Error('Missing payload'), req, {
+      tags: {
+        projectID,
+        trackerVersion: trackerVersion || 'unknown',
+        trackerXHR: trackerXHR || 'unknown'
+      }
+    })
+    return false
+  }
+  if (!payload.startsWith('v1.naclbox.')) {
+    // Drop invalid payload format
+    req.log.error({
+      msg: 'Invalid payload format',
+      projectID,
+      payload,
+      trackerVersion,
+      trackerXHR
+    })
+    app.metrics.increment(Metrics.invalidPayload, projectID)
+    app.metrics.increment(Metrics.droppedCount, projectID)
+    app.sentry.report(new Error('Invalid payload format'), req, {
+      tags: {
+        projectID,
+        payload,
+        trackerVersion: trackerVersion || 'unknown',
+        trackerXHR: trackerXHR || 'unknown'
+      }
+    })
+    return false
+  }
+  return true
+}
+
+// --
+
+function isOriginAcceptable(
+  app: App,
+  req: Request,
+  projectConfig: ProjectConfig
+) {
+  const { projectID, trackerVersion, trackerXHR } = getRequestParams(req)
+  if (
+    req.headers['origin'] &&
+    !projectConfig.origins.includes(req.headers['origin'])
+  ) {
+    const requestOrigin: string = req.headers['origin']
+    const projectOrigins = projectConfig.origins
+    if (requestOrigin.match(/^http(s)?:\/\/(localhost|127\.0\.0\.1)/)) {
+      // Ignore localhost (tracking script used in development)
+      req.log.warn({
+        msg: 'Ignoring localhost origin',
+        projectID,
+        requestOrigin,
+        projectOrigins,
+        trackerVersion,
+        trackerXHR
+      })
+      app.metrics.increment(Metrics.droppedCount, projectID)
+      return false
+    }
+    // Drop invalid origin
+    req.log.warn({
+      msg: 'Invalid origin',
+      projectID,
+      requestOrigin,
+      projectOrigins,
+      trackerVersion,
+      trackerXHR
+    })
+    app.metrics.increment(Metrics.invalidOrigin, projectID)
+    app.metrics.increment(Metrics.droppedCount, projectID)
+    app.sentry.report(new Error('Invalid origin'), req, {
+      tags: {
+        projectID,
+        requestOrigin,
+        trackerVersion: trackerVersion || 'unknown',
+        trackerXHR: trackerXHR || 'unknown'
+      },
+      context: {
+        projectOrigins
+      }
+    })
+    return false
+  }
+  return true
+}
 
 // --
 
 async function processIncomingMessage(
   app: App,
-  req: FastifyRequest<any, QueryParams>,
+  req: Request,
   projectID: string,
   payload: string | undefined | null,
   country?: string
@@ -51,44 +170,8 @@ async function processIncomingMessage(
     )
     app.metrics.histogram(Metrics.xhrType, projectID, trackerXHR)
     app.metrics.histogram(Metrics.dnt, projectID, req.headers.dnt === '1')
-    if (!payload) {
-      req.log.warn({
-        msg: 'Missing payload',
-        projectID,
-        payload,
-        trackerVersion,
-        trackerXHR
-      })
-      app.metrics.increment(Metrics.missingPayload, projectID)
-      app.metrics.increment(Metrics.droppedCount, projectID)
-      app.sentry.report(new Error('Missing payload'), req, {
-        tags: {
-          projectID,
-          trackerVersion: trackerVersion || 'unknown',
-          trackerXHR: trackerXHR || 'unknown'
-        }
-      })
-      return
-    }
-    if (!payload.startsWith('v1.naclbox.')) {
-      // Drop invalid payload format
-      req.log.error({
-        msg: 'Invalid payload format',
-        projectID,
-        payload,
-        trackerVersion,
-        trackerXHR
-      })
-      app.metrics.increment(Metrics.invalidPayload, projectID)
-      app.metrics.increment(Metrics.droppedCount, projectID)
-      app.sentry.report(new Error('Invalid payload format'), req, {
-        tags: {
-          projectID,
-          payload,
-          trackerVersion: trackerVersion || 'unknown',
-          trackerXHR: trackerXHR || 'unknown'
-        }
-      })
+
+    if (!isPayloadAcceptable(app, req, payload)) {
       return
     }
 
@@ -98,47 +181,7 @@ async function processIncomingMessage(
       app.metrics.increment(Metrics.droppedCount, projectID)
       return
     }
-    if (
-      req.headers['origin'] &&
-      !projectConfig.origins.includes(req.headers['origin'])
-    ) {
-      const requestOrigin: string = req.headers['origin']
-      const projectOrigins = projectConfig.origins
-      if (requestOrigin.match(/^http(s)?:\/\/(localhost|127\.0\.0\.1)/)) {
-        // Ignore localhost (tracking script used in development)
-        req.log.warn({
-          msg: 'Ignoring localhost origin',
-          projectID,
-          requestOrigin,
-          projectOrigins,
-          trackerVersion,
-          trackerXHR
-        })
-        app.metrics.increment(Metrics.droppedCount, projectID)
-        return
-      }
-      // Drop invalid origin
-      req.log.warn({
-        msg: 'Invalid origin',
-        projectID,
-        requestOrigin,
-        projectOrigins,
-        trackerVersion,
-        trackerXHR
-      })
-      app.metrics.increment(Metrics.invalidOrigin, projectID)
-      app.metrics.increment(Metrics.droppedCount, projectID)
-      app.sentry.report(new Error('Invalid origin'), req, {
-        tags: {
-          projectID,
-          requestOrigin,
-          trackerVersion: trackerVersion || 'unknown',
-          trackerXHR: trackerXHR || 'unknown'
-        },
-        context: {
-          projectOrigins
-        }
-      })
+    if (!isOriginAcceptable(app, req, projectConfig)) {
       return
     }
 
@@ -218,7 +261,7 @@ export default async function projectIDRoutes(app: App) {
   app.register(rateLimit, {
     global: false,
     redis: app.redis.rateLimit,
-    keyGenerator: (req: any) => {
+    keyGenerator: function generateRateLimitingKey(req: any) {
       return `push:${req.params.projectID}:${req.id.split('.')[0]}`
     }
   })
@@ -235,7 +278,7 @@ export default async function projectIDRoutes(app: App) {
   app.get<GetQueryParams, UrlParams>(
     '/event/:projectID',
     commonConfig,
-    async (req, res) => {
+    async function handleGetEvent(req, res) {
       res.header('cache-control', 'private, no-cache, proxy-revalidate')
       const { projectID } = req.params
       const { payload } = req.query
@@ -264,7 +307,7 @@ export default async function projectIDRoutes(app: App) {
   app.post<QueryParams, UrlParams>(
     '/event/:projectID',
     commonConfig,
-    async (req, res) => {
+    async function handlePostEvent(req, res) {
       const { projectID } = req.params
       const country: string | undefined = req.headers['cf-ipcountry']
       const payload = req.body as string
@@ -283,30 +326,34 @@ export default async function projectIDRoutes(app: App) {
    * privacy (although ironically it makes E2EE impossible), so we treat
    * it as a DNT event, but with a different type for distinction.
    */
-  app.get('/noscript/:projectID', commonConfig, async (req, res) => {
-    const { projectID } = req.params
-    const projectConfig = await getProjectConfig(projectID, app, req)
-    if (projectConfig === null) {
-      app.metrics.increment(Metrics.invalidProjectConfig, projectID)
-      app.metrics.increment(Metrics.droppedCount, projectID)
+  app.get<QueryParams, UrlParams>(
+    '/noscript/:projectID',
+    commonConfig,
+    async function handleGetNoscript(req, res) {
+      const { projectID } = req.params
+      const projectConfig = await getProjectConfig(projectID, app, req)
+      if (projectConfig === null) {
+        app.metrics.increment(Metrics.invalidProjectConfig, projectID)
+        app.metrics.increment(Metrics.droppedCount, projectID)
+        return res.status(204).send()
+      }
+      if (!projectConfig.publicKey) {
+        req.log.warn({
+          msg: 'Missing public key in Redis config',
+          projectID
+        })
+        app.metrics.increment(Metrics.invalidProjectConfig, projectID)
+        app.metrics.increment(Metrics.droppedCount, projectID)
+        return res.status(204).send()
+      }
+      const payloadEvent = createBrowserEvent('session:noscript', null)
+      const publicKey = parsePublicKey(projectConfig.publicKey)
+      const payload = encryptString(JSON.stringify(payloadEvent), publicKey)
+      req.query.xhr = 'noscript'
+      const country: string | undefined = req.headers['cf-ipcountry']
+      await processIncomingMessage(app, req, projectID, payload, country)
+      res.header('cache-control', 'private, no-cache, proxy-revalidate')
       return res.status(204).send()
     }
-    if (!projectConfig.publicKey) {
-      req.log.warn({
-        msg: 'Missing public key in Redis config',
-        projectID
-      })
-      app.metrics.increment(Metrics.invalidProjectConfig, projectID)
-      app.metrics.increment(Metrics.droppedCount, projectID)
-      return res.status(204).send()
-    }
-    const payloadEvent = createBrowserEvent('session:noscript', null)
-    const publicKey = parsePublicKey(projectConfig.publicKey)
-    const payload = encryptString(JSON.stringify(payloadEvent), publicKey)
-    req.query.xhr = 'noscript'
-    const country: string | undefined = req.headers['cf-ipcountry']
-    await processIncomingMessage(app, req, projectID, payload, country)
-    res.header('cache-control', 'private, no-cache, proxy-revalidate')
-    return res.status(204).send()
-  })
+  )
 }
