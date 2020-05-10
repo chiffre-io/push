@@ -16,7 +16,7 @@ up our sleeve" promise.
 Here, most events are collected using two methods:
 
 - POST with the encrypted payload in the body
-- GET with the encrypted paylaod in a query string argument
+- GET with the encrypted payload in a query string argument
 
 The first one is preferred by the tracker script, and uses either `fetch`
 or `sendBeacon`, depending on context and availability.
