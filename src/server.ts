@@ -50,6 +50,19 @@ export default function createApp() {
     wildcard: false
   })
 
+  app.addHook('onRequest', (req, res, next) => {
+    if (req.raw.url !== '/') {
+      // Only apply this hook on /
+      return next()
+    }
+    if (req.headers['x-clevercloud-monitoring'] === 'telegraf') {
+      // Forward Clever Cloud health checks to under-pressure
+      return next()
+    }
+    // For everyone else, redirect to the home page
+    res.redirect(301, 'https://chiffre.io')
+  })
+
   app.addHook('onClose', async (_, done) => {
     await Promise.all([app.redis.ingress.quit(), app.redis.rateLimit.quit()])
     done()
