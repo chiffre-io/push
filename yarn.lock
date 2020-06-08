@@ -1045,11 +1045,6 @@ ansi-escapes@^4.2.1:
   dependencies:
     type-fest "^0.8.1"
 
-ansi-regex@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-3.0.0.tgz#ed0317c322064f79466c02966bddb605ab37d998"
-  integrity sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=
-
 ansi-regex@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-4.1.0.tgz#8b9f8f08cf1acb843756a839ca8c7e3168c51997"
@@ -1185,13 +1180,13 @@ atomic-sleep@^1.0.0:
   resolved "https://registry.yarnpkg.com/atomic-sleep/-/atomic-sleep-1.0.0.tgz#eb85b77a601fc932cfe432c5acd364a9e2c9075b"
   integrity sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==
 
-autocannon@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-4.6.0.tgz#01c18e211444bd523c97da4ff7ff83cd25035333"
-  integrity sha512-pWHEBJh9bkQeDXYj1NL2BBYeXTaLkbRiy3NZ7vNR1bq7vWxHP8R+iCmDyBCtuh2PMJiWlGlikXa1p0LUUY3Tdw==
+autocannon@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-5.0.0.tgz#dfc501d8fb8fa887f5b1a4edd91c5e0f6084f460"
+  integrity sha512-Ne6l2gI63adlGyhR+5KSXizUyCPqwPc562MqBYbgkPuM2zh7s12bPMVSfpK54oRgt04CGhdnDGKJWaJWqIRioQ==
   dependencies:
-    chalk "^3.0.0"
-    cli-table3 "^0.5.1"
+    chalk "^4.0.0"
+    cli-table3 "^0.6.0"
     clone "^2.1.2"
     color-support "^1.1.1"
     cross-argv "^1.0.0"
@@ -1565,13 +1560,13 @@ cli-boxes@^2.2.0:
   resolved "https://registry.yarnpkg.com/cli-boxes/-/cli-boxes-2.2.0.tgz#538ecae8f9c6ca508e3c3c95b453fe93cb4c168d"
   integrity sha512-gpaBrMAizVEANOpfZp/EEUixTXDyGt7DFzdK5hU+UbWt/J0lB0w20ncZj59Z9a93xHb9u12zF5BS6i9RKbtg4w==
 
-cli-table3@^0.5.1:
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/cli-table3/-/cli-table3-0.5.1.tgz#0252372d94dfc40dbd8df06005f48f31f656f202"
-  integrity sha512-7Qg2Jrep1S/+Q3EceiZtQcDPWxhAvBw+ERf1162v4sikJrvojMHFqXt8QIVha8UlH9rgU0BeWPytZ9/TzYqlUw==
+cli-table3@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/cli-table3/-/cli-table3-0.6.0.tgz#b7b1bc65ca8e7b5cef9124e13dc2b21e2ce4faee"
+  integrity sha512-gnB85c3MGC7Nm9I/FkiasNBOKjOiO1RNuXXarQms37q4QMpWdlbBgD/VnOStA2faG1dpXMv31RFApjX1/QdgWQ==
   dependencies:
     object-assign "^4.1.0"
-    string-width "^2.1.1"
+    string-width "^4.2.0"
   optionalDependencies:
     colors "^1.1.2"
 
@@ -5493,14 +5488,6 @@ string-similarity@^4.0.1:
   resolved "https://registry.yarnpkg.com/string-similarity/-/string-similarity-4.0.1.tgz#ea7c11f0093cb3088cdcc5eb16cfd90cb54962f7"
   integrity sha512-v36MJzloekKVvKAsYi6O/qpn2mIuvwEFIT9Gx3yg4spkNjXYsk7yxc37g4ZTyMVIBvt/9PZGxnqEtme8XHK+Mw==
 
-string-width@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-2.1.1.tgz#ab93f27a8dc13d28cac815c462143a6d9012ae9e"
-  integrity sha512-nOqH59deCq9SRHlxq1Aw85Jnt4w6KvLKqWVik6oA9ZklXLNIOlqg4F2yrT1MVaTjAqvVwdfeZ7w7aCvJD7ugkw==
-  dependencies:
-    is-fullwidth-code-point "^2.0.0"
-    strip-ansi "^4.0.0"
-
 string-width@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-3.1.0.tgz#22767be21b62af1081574306f69ac51b62203961"
@@ -5557,13 +5544,6 @@ string_decoder@~1.1.1:
   integrity sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==
   dependencies:
     safe-buffer "~5.1.0"
-
-strip-ansi@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-4.0.0.tgz#a8479022eb1ac368a871389b635262c505ee368f"
-  integrity sha1-qEeQIusaw2iocTibY1JixQXuNo8=
-  dependencies:
-    ansi-regex "^3.0.0"
 
 strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   version "5.2.0"
