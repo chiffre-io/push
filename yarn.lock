@@ -1181,9 +1181,9 @@ atomic-sleep@^1.0.0:
   integrity sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==
 
 autocannon@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-5.0.0.tgz#dfc501d8fb8fa887f5b1a4edd91c5e0f6084f460"
-  integrity sha512-Ne6l2gI63adlGyhR+5KSXizUyCPqwPc562MqBYbgkPuM2zh7s12bPMVSfpK54oRgt04CGhdnDGKJWaJWqIRioQ==
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-5.0.1.tgz#2d0792e2431fae0f16ad27655d694d5a6ec18117"
+  integrity sha512-u9lW88Y6Y7zIXgDXtRuVPWWZnqkXVvGMmi66kNXsrqFodKHU52kZA8FO6qF8hwJOjf9svN++b1mdFzMuPQt7Lg==
   dependencies:
     chalk "^4.0.0"
     cli-table3 "^0.6.0"
