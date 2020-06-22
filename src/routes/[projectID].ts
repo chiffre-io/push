@@ -133,17 +133,17 @@ function isOriginAcceptable(
     })
     app.metrics.increment(Metrics.invalidOrigin, projectID)
     app.metrics.increment(Metrics.droppedCount, projectID)
-    app.sentry.report(new Error('Invalid origin'), req, {
-      tags: {
-        projectID,
-        requestOrigin,
-        trackerVersion: trackerVersion || 'unknown',
-        trackerXHR: trackerXHR || 'unknown'
-      },
-      context: {
-        projectOrigins
-      }
-    })
+    // app.sentry.report(new Error('Invalid origin'), req, {
+    //   tags: {
+    //     projectID,
+    //     requestOrigin,
+    //     trackerVersion: trackerVersion || 'unknown',
+    //     trackerXHR: trackerXHR || 'unknown'
+    //   },
+    //   context: {
+    //     projectOrigins
+    //   }
+    // })
     return false
   }
   return true
