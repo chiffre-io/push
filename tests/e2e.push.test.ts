@@ -18,6 +18,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await ctx.redis.quit()
   await ctx.server.close()
+  ctx.redis.disconnect()
 })
 
 // -----------------------------------------------------------------------------

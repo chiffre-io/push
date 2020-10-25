@@ -29,7 +29,10 @@ interface UrlParams {
   projectID: string
 }
 
-type Request = FastifyRequest<any, QueryParams, UrlParams>
+type Request = FastifyRequest<{
+  Querystring: QueryParams
+  Params: UrlParams
+}>
 
 export const RATE_LIMIT_REQUESTS_PER_MINUTE = 200
 
@@ -275,14 +278,23 @@ export default async function projectIDRoutes(app: App) {
     }
   }
 
-  app.get<GetQueryParams, UrlParams>(
+  type GetRouteTraits = {
+    Params: UrlParams
+    Querystring: GetQueryParams
+    Headers: {
+      'cf-ipcountry'?: string
+    }
+    Body?: string
+  }
+
+  app.get<GetRouteTraits>(
     '/event/:projectID',
     commonConfig,
     async function handleGetEvent(req, res) {
       res.header('cache-control', 'private, no-cache, proxy-revalidate')
       const { projectID } = req.params
       const { payload } = req.query
-      const country: string | undefined = req.headers['cf-ipcountry']
+      const country = req.headers['cf-ipcountry']
       // Ignore badly-written Bing scrapers
       /* istanbul ignore next */
       if (
@@ -304,17 +316,35 @@ export default async function projectIDRoutes(app: App) {
     }
   )
 
-  app.post<QueryParams, UrlParams>(
+  type PostRouteTraits = {
+    Params: UrlParams
+    Querystring: QueryParams
+    Headers: {
+      'cf-ipcountry'?: string
+    }
+    Body: string
+  }
+
+  app.post<PostRouteTraits>(
     '/event/:projectID',
     commonConfig,
     async function handlePostEvent(req, res) {
       const { projectID } = req.params
-      const country: string | undefined = req.headers['cf-ipcountry']
-      const payload = req.body as string
+      const country = req.headers['cf-ipcountry']
+      const payload = req.body
       await processIncomingMessage(app, req, projectID, payload, country)
       return res.status(204).send()
     }
   )
+
+  type NoScriptRouteTraits = {
+    Params: UrlParams
+    Querystring: QueryParams
+    Headers: {
+      'cf-ipcountry'?: string
+    }
+    Body: string
+  }
 
   /**
    * This route helps getting some visit counts from clients without
@@ -326,7 +356,7 @@ export default async function projectIDRoutes(app: App) {
    * privacy (although ironically it makes E2EE impossible), so we treat
    * it as a DNT event, but with a different type for distinction.
    */
-  app.get<QueryParams, UrlParams>(
+  app.get<NoScriptRouteTraits>(
     '/noscript/:projectID',
     commonConfig,
     async function handleGetNoscript(req, res) {
@@ -350,7 +380,7 @@ export default async function projectIDRoutes(app: App) {
       const publicKey = parsePublicKey(projectConfig.publicKey)
       const payload = encryptString(JSON.stringify(payloadEvent), publicKey)
       req.query.xhr = 'noscript'
-      const country: string | undefined = req.headers['cf-ipcountry']
+      const country = req.headers['cf-ipcountry']
       await processIncomingMessage(app, req, projectID, payload, country)
       res.header('cache-control', 'private, no-cache, proxy-revalidate')
       return res.status(204).send()

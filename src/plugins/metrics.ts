@@ -1,3 +1,4 @@
+import type { FastifyPluginCallback } from 'fastify'
 import fp from 'fastify-plugin'
 import { StatsD } from 'node-statsd'
 
@@ -29,7 +30,7 @@ export enum Metrics {
   catchAll = 'catch_all'
 }
 
-export default fp(function metricsPlugin(app, _, next) {
+const metricsPlugin: FastifyPluginCallback = (app, _, next) => {
   const client = new StatsD({
     host: process.env.STATSD_HOST || 'localhost',
     port: parseInt(process.env.STATSD_PORT || '8125'),
@@ -59,4 +60,6 @@ export default fp(function metricsPlugin(app, _, next) {
 
   app.decorate('metrics', decoration)
   next()
-})
+}
+
+export default fp(metricsPlugin)

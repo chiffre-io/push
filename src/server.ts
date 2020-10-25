@@ -4,6 +4,7 @@ import { createServer, Server } from 'fastify-micro'
 import fastifyStatic from 'fastify-static'
 import { MetricsDecoration } from './plugins/metrics'
 import { RedisDecoration, checkRedisHealth } from './plugins/redis'
+import IORedis from 'ioredis'
 
 export interface App extends Server {
   redis: RedisDecoration
@@ -64,7 +65,19 @@ export default function createApp() {
   })
 
   app.addHook('onClose', async (_, done) => {
-    await Promise.all([app.redis.ingress.quit(), app.redis.rateLimit.quit()])
+    async function closeRedisConnection(con: IORedis.Redis) {
+      await con.quit()
+      return new Promise(resolve => {
+        con.on('end', resolve)
+        setTimeout(() => {
+          con.disconnect()
+        }, 200)
+      })
+    }
+    await Promise.all([
+      closeRedisConnection(app.redis.ingress),
+      closeRedisConnection(app.redis.rateLimit)
+    ])
     done()
   })
 

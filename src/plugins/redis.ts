@@ -1,3 +1,4 @@
+import type { FastifyPluginCallback } from 'fastify'
 import Redis from 'ioredis'
 import { FastifyRequest } from 'fastify'
 import fp from 'fastify-plugin'
@@ -9,7 +10,7 @@ export interface RedisDecoration {
   rateLimit: Redis.Redis
 }
 
-export default fp(function redisPlugin(app, _, next) {
+const redisPlugin: FastifyPluginCallback = (app, _, next) => {
   const ingress = new Redis(process.env.REDIS_URI_INGRESS)
   ingress.on('error', error => {
     app.log.error({
@@ -30,7 +31,9 @@ export default fp(function redisPlugin(app, _, next) {
   }
   app.decorate('redis', decoration)
   next()
-})
+}
+
+export default fp(redisPlugin)
 
 // --
 
