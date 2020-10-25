@@ -30,6 +30,9 @@
     "e2e:run": "jest e2e --runInBand --coverage --colors",
     "e2e:test": "run-s e2e:setup e2e:run e2e:teardown"
   },
+  "engines": {
+    "node": "^14.x"
+  },
   "dependencies": {
     "@47ng/check-env": "^2.0.1",
     "@chiffre/analytics-core": "^2.0.0",
