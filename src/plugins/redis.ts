@@ -71,3 +71,13 @@ export function checkRedisHealth(instance: Redis.Redis, name: string) {
     throw new Error(`Redis status (${name}): ${instance.status}`)
   }
 }
+
+export async function closeRedisConnection(connection: Redis.Redis) {
+  await connection.quit()
+  return new Promise(resolve => {
+    connection.on('end', resolve)
+    setTimeout(() => {
+      connection.disconnect()
+    }, 200)
+  })
+}
