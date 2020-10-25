@@ -54,7 +54,6 @@ jobs:
           string: "${{ steps.previoustag.outputs.tag }}"
           replace-with: '$1'
       - id: sentry-release
-        if: steps.semantic.outputs.new-release-published == 'true'
         name: Generate Sentry Release ID
         run: echo "::set-output name=id::${{ env.SERVICE_NAME }}@${{ steps.latest-version.outputs.replaced }}-${{ steps.short-sha1.outputs.value }}"
       - run: echo "${{ steps.sentry-release.outputs.id }}"
