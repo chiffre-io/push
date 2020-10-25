@@ -51,7 +51,7 @@ jobs:
         name: Format Latest Tag to Version
         with:
           pattern: '^v?(.+)'
-          string: "${{ steps.previoustag.outputs.tag }}"
+          string: "${{ steps.latest-tag.outputs.tag }}"
           replace-with: '$1'
       - id: sentry-release
         name: Generate Sentry Release ID
