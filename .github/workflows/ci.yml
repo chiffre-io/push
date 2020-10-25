@@ -40,23 +40,6 @@ jobs:
         name: Report code coverage
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - id: short-sha1
-        name: Get short Git SHA-1
-        run: echo "::set-output name=value::$(echo $GITHUB_SHA | cut -c1-8)"
-      - id: latest-tag
-        uses: WyriHaximus/github-action-get-previous-tag@24cf9bd
-        name: Get Latest Tag
-      - id: latest-version
-        uses: frabert/replace-string-action@4ec615c
-        name: Format Latest Tag to Version
-        with:
-          pattern: '^v?(.+)'
-          string: "${{ steps.latest-tag.outputs.tag }}"
-          replace-with: '$1'
-      - id: sentry-release
-        name: Generate Sentry Release ID
-        run: echo "::set-output name=id::${{ env.SERVICE_NAME }}@${{ steps.latest-version.outputs.replaced }}-${{ steps.short-sha1.outputs.value }}"
-      - run: echo "${{ steps.sentry-release.outputs.id }}"
       - uses: 8398a7/action-slack@78391c2
         name: Notify on Slack
         if: always() # Pick up events even if the job fails or is canceled.

@@ -43,13 +43,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - id: latest-tag
+        uses: WyriHaximus/github-action-get-previous-tag@24cf9bd
+        name: Get Latest Tag
+      - id: latest-version
+        uses: frabert/replace-string-action@4ec615c
+        name: Format Latest Tag to Version
+        with:
+          pattern: '^v?(.+)'
+          string: "${{ steps.latest-tag.outputs.tag }}"
+          replace-with: '$1'
       - id: sentry-release
-        if: steps.semantic.outputs.new-release-published == 'true'
         name: Generate Sentry Release ID
-        run: echo "::set-output name=id::${{ env.SERVICE_NAME }}@${{ env.RELEASE_VERSION }}-${{ steps.short-sha1.outputs.value }}"
+        run: echo "::set-output name=id::${{ env.SERVICE_NAME }}@${{ steps.latest-version.outputs.replaced }}-${{ steps.short-sha1.outputs.value }}"
       - uses: tclindner/sentry-releases-action@658b2f3
         name: Publish the release to Sentry
-        if: steps.semantic.outputs.new-release-published == 'true'
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: chiffre
@@ -59,7 +67,6 @@ jobs:
           environment: production
       - uses: 47ng/actions-clever-cloud@master
         name: Deploy to Clever Cloud
-        if: steps.semantic.outputs.new-release-published == 'true'
         with:
           alias: push
           timeout: 600
