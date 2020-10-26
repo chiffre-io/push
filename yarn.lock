@@ -2405,9 +2405,9 @@ fastify-graceful-shutdown@^3.0.0:
     fastparallel "^2.3.0"
 
 fastify-micro@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/fastify-micro/-/fastify-micro-2.0.0.tgz#959271d07db9d272cd5983ca0093eafed9199e38"
-  integrity sha512-WS+9P4bDmYV61m/k+DlaH2eSF6ra3fP7YPw9C797of+BdpnMwti76q1gcPFf/+kdlXBlyzfzeVUFZWHAsu6mMw==
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fastify-micro/-/fastify-micro-2.0.1.tgz#86ba5f7d902d8420c23db16b660d74145b767005"
+  integrity sha512-jGzcY0M8gEh9iHTrPa0axtof7b5C4zjmGxyMIuP2MvIdbwAnTcOwcaHWS1kDql4jkLSEJulmSLoQ2YzwDAgErg==
   dependencies:
     "@47ng/check-env" "^2.0.1"
     "@sentry/node" "^5.27.1"
@@ -4270,12 +4270,7 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-nanoid@^3.0.2:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.3.tgz#b2bcfcfda4b4d6838bc22a0c8dd3c0a17a204c20"
-  integrity sha512-Zw8rTOUfh6FlKgkEbHiB1buOF2zOPOQyGirABUWn+9Z7m9PpyoLVkh6Ksc53vBjndINQ2+9LfRPaHxb/u45EGg==
-
-nanoid@^3.1.15:
+nanoid@^3.0.2, nanoid@^3.1.15:
   version "3.1.15"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.1.15.tgz#28e7c4ce56aff2d0c2d37814c7aef9d6c5b3e6f3"
   integrity sha512-n8rXUZ8UU3lV6+43atPrSizqzh25n1/f00Wx1sCiE7R1sSHytZLTTiQl8DjC4IDLOnEZDlgJhy0yO4VsIpMxow==
