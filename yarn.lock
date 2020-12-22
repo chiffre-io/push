@@ -2365,9 +2365,9 @@ fastify-graceful-shutdown@^3.0.0:
     fastparallel "^2.3.0"
 
 fastify-micro@^2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/fastify-micro/-/fastify-micro-2.0.1.tgz#86ba5f7d902d8420c23db16b660d74145b767005"
-  integrity sha512-jGzcY0M8gEh9iHTrPa0axtof7b5C4zjmGxyMIuP2MvIdbwAnTcOwcaHWS1kDql4jkLSEJulmSLoQ2YzwDAgErg==
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/fastify-micro/-/fastify-micro-2.1.0.tgz#12931504a66dff213bfe9e86d9a24f5f67a64abe"
+  integrity sha512-fhnxU5L1264exIPFGBOnoRbKanyEzeON9NwjIN6pFSCkUXRifU4REEJd+TIG1cXlsg9Go6kK+x24QXPI6fX2lQ==
   dependencies:
     "@47ng/check-env" "^2.0.1"
     "@sentry/node" "^5.27.1"
