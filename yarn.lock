@@ -1205,9 +1205,9 @@ atomic-sleep@^1.0.0:
   integrity sha512-kNOjDqAh7px0XWNI+4QbzoiR/nTkHAWNud2uvnJquD1/x5a7EQZMJT0AczqK0Qn67oY/TTQ1LbUKajZpp3I9tQ==
 
 autocannon@^7.0.0:
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-7.0.2.tgz#4beb0123961641f041b1e8957ba35fb3e77f472d"
-  integrity sha512-T1Sb38FCHB7OIbB/9UaVaS1wItrUL6gHh9eN/Gd/RaIAz59culOQgw8PxtNfGUTo8lgeGQa7NWw2qdMgQ1xtdg==
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/autocannon/-/autocannon-7.0.3.tgz#064442507198d3f87a293107ab80ebd45ec91912"
+  integrity sha512-SotMqmw735jdDAktwUJWU9ORLJlczA1Bbng4D+B4bocNQKiIzLfsigTOQDLWUc8HPaYgeTtGoO6xOUeFHHAmPQ==
   dependencies:
     chalk "^4.1.0"
     cli-table3 "^0.6.0"
@@ -1228,6 +1228,7 @@ autocannon@^7.0.0:
     progress "^2.0.3"
     reinterval "^1.1.0"
     retimer "^2.0.0"
+    semver "^7.3.2"
     timestring "^6.0.0"
 
 avvio@^7.1.2:
