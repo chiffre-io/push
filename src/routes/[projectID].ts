@@ -1,19 +1,19 @@
+import { createBrowserEvent } from '@chiffre/analytics-core'
+import { encryptString, parsePublicKey } from '@chiffre/crypto-box'
 import { FastifyRequest } from 'fastify'
 import rateLimit from 'fastify-rate-limit'
-import { encryptString, parsePublicKey } from '@chiffre/crypto-box'
-import { createBrowserEvent } from '@chiffre/analytics-core'
-import { App } from '../server'
 import {
+  getProjectKey,
   KeyIDs,
   OverLimitStats,
+  ProjectConfig,
   PubSubChannels,
-  SerializedMessage,
-  getProjectKey,
-  ProjectConfig
+  SerializedMessage
 } from '../exports'
-import { getProjectConfig } from '../plugins/redis'
-import { getNextMidnightUTC } from '../utility'
 import { Metrics } from '../plugins/metrics'
+import { getProjectConfig } from '../plugins/redis'
+import { App } from '../server'
+import { getNextMidnightUTC } from '../utility'
 
 interface QueryParams {
   perf?: string
@@ -125,6 +125,10 @@ function isOriginAcceptable(
       app.metrics.increment(Metrics.droppedCount, projectID)
       return false
     }
+    if (requestOrigin === 'null') {
+      return true
+    }
+
     // Drop invalid origin
     req.log.warn({
       msg: 'Invalid origin',
