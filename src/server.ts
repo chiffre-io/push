@@ -28,7 +28,7 @@ export default function createApp() {
       exposeStatusRoute: {
         url: '/',
         routeOpts: {
-          logLevel: 'info'
+          logLevel: 'silent'
         }
       },
       healthCheck: async (app: App) => {
@@ -59,11 +59,13 @@ export default function createApp() {
       // Only apply this hook on /
       return next()
     }
-    if (req.headers['x-clevercloud-monitoring'] === 'telegraf') {
-      // Forward Clever Cloud health checks to under-pressure
+    if (
+      req.headers['x-clevercloud-monitoring'] === 'telegraf' ||
+      req.headers['user-agent']?.includes('UptimeRobot')
+    ) {
+      // Forward Clever Cloud & UptimeRobot health checks to under-pressure
       return next()
     }
-    res.log.info({ msg: 'PING /', headers: req.headers })
     // For everyone else, redirect to the home page
     res.redirect(301, 'https://chiffre.io')
   })
