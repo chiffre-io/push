@@ -1,12 +1,12 @@
-import path from 'path'
 import checkEnv from '@47ng/check-env'
 import { createServer, Server } from 'fastify-micro'
 import fastifyStatic from 'fastify-static'
+import path from 'path'
 import { MetricsDecoration } from './plugins/metrics'
 import {
-  RedisDecoration,
   checkRedisHealth,
-  closeRedisConnection
+  closeRedisConnection,
+  RedisDecoration
 } from './plugins/redis'
 
 export interface App extends Server {
@@ -63,6 +63,7 @@ export default function createApp() {
       // Forward Clever Cloud health checks to under-pressure
       return next()
     }
+    res.log.info({ msg: 'PING /', headers: req.headers })
     // For everyone else, redirect to the home page
     res.redirect(301, 'https://chiffre.io')
   })
