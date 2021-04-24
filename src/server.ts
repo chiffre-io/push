@@ -28,7 +28,7 @@ export default function createApp() {
       exposeStatusRoute: {
         url: '/',
         routeOpts: {
-          logLevel: 'silent'
+          logLevel: 'info'
         }
       },
       healthCheck: async (app: App) => {
