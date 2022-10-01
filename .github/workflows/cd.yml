@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - id: latest-tag
-        uses: WyriHaximus/github-action-get-previous-tag@7cf31075d206b1a0341e09ef4305949a73ab599b
+        uses: WyriHaximus/github-action-get-previous-tag@8a0e045f02c0a3a04e1452df58b90fc7e555e950
         name: Get Latest Tag
       - id: latest-version
         uses: frabert/replace-string-action@4ec615c8a75164a61d8fb333ad5e2e86ff038af1
